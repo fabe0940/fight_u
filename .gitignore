@@ -1,0 +1,10 @@
+# VIM Swap Files
+*.swp
+
+# LaTeX Generated Files
+*.pdf
+*.log
+*.aux
+
+# OSX Files
+.DS_Store
