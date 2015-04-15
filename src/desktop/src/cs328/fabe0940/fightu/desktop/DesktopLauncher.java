@@ -10,8 +10,6 @@ public class DesktopLauncher {
 		config.title = "Fight University";
 		config.width = 800;
 		config.height = 600;
-		config.fullscreen = true;
-		config.vSyncEnabled = true;
 		new LwjglApplication(new Main(), config);
 	}
 }
