@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector3;
 
 public class MainMenuScreen extends ScreenAdapter {
 	private final Main game;
+	private boolean hoverHandled;
 	private OrthographicCamera guiCam;
 	private Rectangle hostBounds;
 	private Rectangle joinBounds;
@@ -26,10 +27,14 @@ public class MainMenuScreen extends ScreenAdapter {
 		guiCam.position.set(Gdx.graphics.getWidth() / 2,
 			Gdx.graphics.getHeight() / 2, 0);
 
-		hostBounds = new Rectangle(50, 475, 250, 100);
-		joinBounds = new Rectangle(50, 325, 250, 100);
-		helpBounds = new Rectangle(50, 175, 250, 100);
-		exitBounds = new Rectangle(50, 25, 250, 100);
+		hostBounds = new Rectangle(85, 160, 105, 30);
+		joinBounds = new Rectangle(110, 120, 105, 30);
+		helpBounds = new Rectangle(125, 70, 105, 30);
+		exitBounds = new Rectangle(110, 20, 105, 30);
+
+		hoverHandled = false;
+
+		Assets.menuMusic.play();
 	}
 
 	@Override
@@ -46,14 +51,18 @@ public class MainMenuScreen extends ScreenAdapter {
 			guiCam.unproject(clickPos);
 
 			if (hostBounds.contains(clickPos.x, clickPos.y)) {
+				Assets.playSound(Assets.menuSelect);
 				game.setScreen(new GameScreen(game));
 			}
 			if (joinBounds.contains(clickPos.x, clickPos.y)) {
+				Assets.playSound(Assets.menuSelect);
 				game.setScreen(new GameScreen(game));
 			}
 			if (helpBounds.contains(clickPos.x, clickPos.y)) {
+				Assets.playSound(Assets.menuSelect);
 			}
 			if (exitBounds.contains(clickPos.x, clickPos.y)) {
+				Assets.playSound(Assets.menuSelect);
 				Gdx.app.exit();
 			}
 		}
@@ -72,32 +81,44 @@ public class MainMenuScreen extends ScreenAdapter {
 
 		game.batcher.disableBlending();
 		game.batcher.begin();
-		game.batcher.draw(Assets.mainMenuBackground, 0, 0,
-			Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		game.batcher.end();
-
-		game.batcher.enableBlending();
-		game.batcher.begin();
 
 		if (hostBounds.contains(clickPos.x, clickPos.y)) {
-			game.batcher.draw(Assets.mainMenuHighlight,
-				hostBounds.x, hostBounds.y,
-				hostBounds.width, hostBounds.height);
-		}
-		if (joinBounds.contains(clickPos.x, clickPos.y)) {
-			game.batcher.draw(Assets.mainMenuHighlight,
-				joinBounds.x, joinBounds.y,
-				joinBounds.width, joinBounds.height);
-		}
-		if (helpBounds.contains(clickPos.x, clickPos.y)) {
-			game.batcher.draw(Assets.mainMenuHighlight,
-				helpBounds.x, helpBounds.y,
-				helpBounds.width, helpBounds.height);
-		}
-		if (exitBounds.contains(clickPos.x, clickPos.y)) {
-			game.batcher.draw(Assets.mainMenuHighlight,
-				exitBounds.x, exitBounds.y,
-				exitBounds.width, exitBounds.height);
+			if (!hoverHandled) {
+				Assets.playSound(Assets.menuHover);
+				hoverHandled = true;
+			}
+			game.batcher.draw(Assets.mainMenuHost, 0, 0,
+				Gdx.graphics.getWidth(),
+				Gdx.graphics.getHeight());
+		} else if (joinBounds.contains(clickPos.x, clickPos.y)) {
+			if (!hoverHandled) {
+				Assets.playSound(Assets.menuHover);
+				hoverHandled = true;
+			}
+			game.batcher.draw(Assets.mainMenuJoin, 0, 0,
+				Gdx.graphics.getWidth(),
+				Gdx.graphics.getHeight());
+		} else if (helpBounds.contains(clickPos.x, clickPos.y)) {
+			if (!hoverHandled) {
+				Assets.playSound(Assets.menuHover);
+				hoverHandled = true;
+			}
+			game.batcher.draw(Assets.mainMenuHelp, 0, 0,
+				Gdx.graphics.getWidth(),
+				Gdx.graphics.getHeight());
+		} else if (exitBounds.contains(clickPos.x, clickPos.y)) {
+			if (!hoverHandled) {
+				Assets.playSound(Assets.menuHover);
+				hoverHandled = true;
+			}
+			game.batcher.draw(Assets.mainMenuExit, 0, 0,
+				Gdx.graphics.getWidth(),
+				Gdx.graphics.getHeight());
+		} else {
+			hoverHandled = false;
+			game.batcher.draw(Assets.mainMenu, 0, 0,
+				Gdx.graphics.getWidth(),
+				Gdx.graphics.getHeight());
 		}
 
 		game.batcher.end();

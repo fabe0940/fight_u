@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector3;
 
 public class GameScreen extends ScreenAdapter {
 	private final Main game;
+	private GameClient client;
 	private Engine engine;
 	private OrthographicCamera guiCam;
 	private Vector3 clickPos;
@@ -19,12 +20,19 @@ public class GameScreen extends ScreenAdapter {
 
 		game = m;
 
+		client = new GameClient();
+		if (!client.connect("127.0.0.1", Network.port)) {
+			game.setScreen(new MainMenuScreen(game));
+		}
+
 		engine = new Engine();
 
 		guiCam = new OrthographicCamera(Gdx.graphics.getWidth(),
 			Gdx.graphics.getHeight());
 		guiCam.position.set(Gdx.graphics.getWidth() / 2,
 			Gdx.graphics.getHeight() / 2, 0);
+
+		Assets.menuMusic.stop();
 	}
 
 	@Override
