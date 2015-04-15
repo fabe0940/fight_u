@@ -1,4 +1,4 @@
-package cs328.fabe0940.fightu.render;
+package cs328.fabe0940.fightu;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.Gdx;
@@ -7,9 +7,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
-import cs328.fabe0940.fightu.Main;
-import cs328.fabe0940.fightu.render.Assets;
-import cs328.fabe0940.fightu.render.GameScreen;
 
 public class GameScreen extends ScreenAdapter {
 	private final Main game;

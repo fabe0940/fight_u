@@ -1,4 +1,4 @@
-package cs328.fabe0940.fightu.render;
+package cs328.fabe0940.fightu;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
