@@ -1,4 +1,4 @@
-package cs328.fabe0940.fightu;
+package cs328.fabe0940.fight_u;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
