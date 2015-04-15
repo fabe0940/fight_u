@@ -1,5 +1,6 @@
 package cs328.fabe0940.fightu.render;
 
+import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
@@ -12,17 +13,16 @@ import cs328.fabe0940.fightu.render.GameScreen;
 
 public class GameScreen extends ScreenAdapter {
 	private final Main game;
+	private Engine engine;
 	private OrthographicCamera guiCam;
-	private Rectangle hostBounds;
-	private Rectangle joinBounds;
-	private Rectangle helpBounds;
-	private Rectangle exitBounds;
 	private Vector3 clickPos;
 
 	public GameScreen(Main m) {
 		Gdx.app.debug("GameScreen:GameScreen", "Initializing");
 
 		game = m;
+
+		engine = new Engine();
 
 		guiCam = new OrthographicCamera(Gdx.graphics.getWidth(),
 			Gdx.graphics.getHeight());
