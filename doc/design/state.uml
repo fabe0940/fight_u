@@ -1,0 +1,20 @@
+@startuml
+hide circle
+skinparam monochrome true
+skinparam shadowing false
+
+[*] -down-> Idle
+
+Idle -left-> Move : Directional Input
+Idle -right-> Attack : Attack Input
+Idle -down-> Hit : Hit
+
+Move -right-> Idle : Released
+Move -down-> Hit : Hit
+
+Attack -left-> Idle : Recovered
+Attack -down-> Hit : Hit
+
+Hit -up-> Idle : Recovered
+
+@enduml
