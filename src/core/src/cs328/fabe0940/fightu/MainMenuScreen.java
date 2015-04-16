@@ -8,7 +8,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
 public class MainMenuScreen extends ScreenAdapter {
-	private final Main game;
+	private final FightU game;
 	private boolean hoverHandled;
 	private OrthographicCamera guiCam;
 	private Rectangle hostBounds;
@@ -17,10 +17,10 @@ public class MainMenuScreen extends ScreenAdapter {
 	private Rectangle exitBounds;
 	private Vector3 clickPos;
 
-	public MainMenuScreen(Main m) {
+	public MainMenuScreen(FightU g) {
 		Gdx.app.debug("MainMenuScreen:MainMenuScreen", "Initializing");
 
-		game = m;
+		game = g;
 
 		guiCam = new OrthographicCamera(Gdx.graphics.getWidth(),
 			Gdx.graphics.getHeight());
@@ -33,10 +33,6 @@ public class MainMenuScreen extends ScreenAdapter {
 		exitBounds = new Rectangle(110, 20, 105, 30);
 
 		hoverHandled = false;
-
-		if (Assets.server != null) {
-			Assets.stopServer();
-		}
 
 		Assets.menuMusic.play();
 	}
@@ -56,19 +52,12 @@ public class MainMenuScreen extends ScreenAdapter {
 
 			if (hostBounds.contains(clickPos.x, clickPos.y)) {
 				Assets.playSound(Assets.menuSelect);
-
-				if (!Assets.startServer()) {
-					Gdx.app.error("MainMenuScreen:update",
-						"Failed to start server");
-					game.setScreen(this);
-				} else {
-					game.setScreen(new GameScreen(game));
-				}
+				game.setScreen(new HostScreen(game));
 			}
 
 			if (joinBounds.contains(clickPos.x, clickPos.y)) {
 				Assets.playSound(Assets.menuSelect);
-				game.setScreen(new GameScreen(game));
+				game.setScreen(new JoinScreen(game));
 			}
 
 			if (helpBounds.contains(clickPos.x, clickPos.y)) {
