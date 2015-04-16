@@ -17,7 +17,7 @@ import cs328.fabe0940.fightu.components.TransformComponent;
 
 public class World {
 	public static final float floor = 100.0f;
-	public static final Vector2 gravity = new Vector2(0.0f, -12.0f);
+	public static final Vector2 gravity = new Vector2(0.0f, -1000.0f);
 
 	private Engine engine;
 
@@ -58,7 +58,7 @@ public class World {
 
 		texture.region = Assets.ryuIdle1;
 
-		transform.pos.set(100, 100, 0);
+		transform.pos.set(200, 300, 0);
 
 		state.set(PlayerComponent.STATE_IDLE);
 
