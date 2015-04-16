@@ -11,12 +11,18 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
+import cs328.fabe0940.fightu.systems.BoundsSystem;
+import cs328.fabe0940.fightu.systems.GravitySystem;
+import cs328.fabe0940.fightu.systems.MovementSystem;
+import cs328.fabe0940.fightu.systems.RenderingSystem;
+import cs328.fabe0940.fightu.systems.StateSystem;
 
 public class HostScreen extends Listener implements Screen, InputProcessor {
 	private final FightU game;
 	private boolean serverFail;
 	private GameServer server;
 	private Engine engine;
+	private World world;
 	private OrthographicCamera guiCam;
 	private Vector3 clickPos;
 
@@ -36,43 +42,56 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 			serverFail = true;
 		}
 
+		Gdx.app.debug("HostScreen:HostScreen", "Loading engine");
+
 		engine = new Engine();
 
-		guiCam = new OrthographicCamera(Gdx.graphics.getWidth(),
-			Gdx.graphics.getHeight());
-		guiCam.position.set(Gdx.graphics.getWidth() / 2,
-			Gdx.graphics.getHeight() / 2, 0);
+		engine.addSystem(new BoundsSystem());
+	 	engine.addSystem(new GravitySystem());
+	 	engine.addSystem(new MovementSystem());
+		engine.addSystem(new RenderingSystem(game.batcher));
+		engine.addSystem(new StateSystem());
+
+		Gdx.app.debug("HostScreen:HostScreen", "Loading world");
+
+		world = new World(engine);
+		world.create();
+
+		Gdx.app.debug("HostScreen:HostScreen", "Loading camera");
+
+		guiCam = new OrthographicCamera(800, 600);
+		guiCam.position.set(800 / 2, 600 / 2, 0);
 
 		Assets.menuMusic.stop();
+
+		Gdx.app.debug("HostScreen:HostScreen", "Starting engine");
+
+		engine.getSystem(BoundsSystem.class).setProcessing(true);
+		engine.getSystem(GravitySystem.class).setProcessing(true);
+		engine.getSystem(MovementSystem.class).setProcessing(true);
+		engine.getSystem(RenderingSystem.class).setProcessing(true);
+		engine.getSystem(StateSystem.class).setProcessing(true);
 	}
 
 	@Override
 	public void render(float delta) {
-		update();
+		update(delta);
 		draw();
 	}
 
-	public void update() {
+	public void update(float delta) {
+		Gdx.app.debug("HostScreen:update", "Updating engine +" + delta);
+
 		if(serverFail) {
 			game.setScreen(new MainMenuScreen(game));
 		}
+
+		if (delta > 0.1f) delta = 0.1f;
+
+		engine.update(delta);
 	}
 
 	public void draw() {
-		GL20 gl = Gdx.gl;
-		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-		gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-		guiCam.update();
-		game.batcher.setProjectionMatrix(guiCam.combined);
-
-		game.batcher.disableBlending();
-		game.batcher.begin();
-		game.batcher.end();
-
-		game.batcher.enableBlending();
-		game.batcher.begin();
-		game.batcher.end();
 	}
 
 	public void connected(Connection c) {

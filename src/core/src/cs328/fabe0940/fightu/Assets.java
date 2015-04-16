@@ -14,6 +14,13 @@ public class Assets {
 	public static Texture mainMenuJoin;
 	public static Texture mainMenuHelp;
 	public static Texture mainMenuExit;
+	public static Texture ryuSheet;
+	public static TextureRegion ryuIdle1;
+	public static TextureRegion ryuIdle2;
+	public static TextureRegion ryuIdle3;
+	public static TextureRegion ryuAttack1;
+	public static TextureRegion ryuAttack2;
+	public static TextureRegion ryuAttack3;
 	public static Music menuMusic;
 	public static Sound menuHover;
 	public static Sound menuSelect;
@@ -32,6 +39,14 @@ public class Assets {
 		mainMenuJoin = loadTexture("img/menu/join.png");
 		mainMenuHelp = loadTexture("img/menu/help.png");
 		mainMenuExit = loadTexture("img/menu/exit.png");
+
+		ryuSheet = loadTexture("img/game/fighters/ryu/sheet.png");
+		ryuIdle1 = new TextureRegion(ryuSheet, 0, 100, 100, 100);
+		ryuIdle1 = new TextureRegion(ryuSheet, 100, 100, 100, 100);
+		ryuIdle1 = new TextureRegion(ryuSheet, 200, 100, 100, 100);
+		ryuIdle1 = new TextureRegion(ryuSheet, 0, 0, 100, 100);
+		ryuIdle1 = new TextureRegion(ryuSheet, 100, 0, 100, 100);
+		ryuIdle1 = new TextureRegion(ryuSheet, 200, 0, 100, 100);
 
 		menuMusic = Gdx.audio.newMusic(
 			Gdx.files.internal("sound/menu/bgmusic.mp3"));
