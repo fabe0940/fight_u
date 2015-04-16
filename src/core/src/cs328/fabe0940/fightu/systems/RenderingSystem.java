@@ -71,19 +71,18 @@ public class RenderingSystem extends IteratingSystem {
 
 		renderQueue.sort(comparator);
 
-		gl = Gdx.gl;
-		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-		gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
 		cam.update();
 
 		batch.setProjectionMatrix(cam.combined);
 
-/*
+		Gdx.gl20.glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
+		Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+		Gdx.gl20.glEnable(GL20.GL_BLEND);
+		Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+		Gdx.gl20.glEnable(GL20.GL_TEXTURE_2D);
+		Gdx.gl20.glBlendEquation(GL20.GL_BLEND);
+
 		batch.enableBlending();
-		batch.setBlendFunction(GL20.GL_SRC_ALHPA,
-			GL20.GL_ONE_MINUS_SRC_ALPHA);
-*/
 
 		batch.begin();
 
