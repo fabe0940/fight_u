@@ -5,6 +5,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
@@ -21,6 +23,8 @@ public class Assets {
 	public static TextureRegion ryuAttack1;
 	public static TextureRegion ryuAttack2;
 	public static TextureRegion ryuAttack3;
+	public static Animation ryuIdle;
+	public static Animation ryuAttack;
 	public static Music menuMusic;
 	public static Sound menuHover;
 	public static Sound menuSelect;
@@ -41,12 +45,19 @@ public class Assets {
 		mainMenuExit = loadTexture("img/menu/exit.png");
 
 		ryuSheet = loadTexture("img/game/fighters/ryu/sheet.png");
-		ryuIdle1 = new TextureRegion(ryuSheet, 0, 100, 100, 100);
-		ryuIdle1 = new TextureRegion(ryuSheet, 100, 100, 100, 100);
-		ryuIdle1 = new TextureRegion(ryuSheet, 200, 100, 100, 100);
 		ryuIdle1 = new TextureRegion(ryuSheet, 0, 0, 100, 100);
-		ryuIdle1 = new TextureRegion(ryuSheet, 100, 0, 100, 100);
-		ryuIdle1 = new TextureRegion(ryuSheet, 200, 0, 100, 100);
+		ryuIdle2 = new TextureRegion(ryuSheet, 100, 0, 100, 100);
+		ryuIdle3 = new TextureRegion(ryuSheet, 200, 0, 100, 100);
+		ryuAttack1 = new TextureRegion(ryuSheet, 0, 0, 100, 100);
+		ryuAttack2 = new TextureRegion(ryuSheet, 100, 100, 100, 100);
+		ryuAttack3 = new TextureRegion(ryuSheet, 200, 100, 100, 100);
+
+		ryuIdle = new Animation(0.4f, ryuIdle1, ryuIdle2, ryuIdle3,
+			ryuIdle2);
+		ryuIdle.setPlayMode(PlayMode.LOOP);
+		ryuAttack = new Animation(0.2f, ryuAttack1, ryuAttack2,
+			ryuAttack3);
+		ryuAttack.setPlayMode(PlayMode.LOOP);
 
 		menuMusic = Gdx.audio.newMusic(
 			Gdx.files.internal("sound/menu/bgmusic.mp3"));

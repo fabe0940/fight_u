@@ -5,6 +5,8 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
@@ -58,15 +60,31 @@ public class RenderingSystem extends IteratingSystem {
 		float originY;
 		float width;
 		float height;
+		GL20 gl;
 		TransformComponent t;
 		TextureComponent tex;
+
+		Gdx.app.debug("RenderingSystem:update",
+			"Updating render");
 
 		super.update(delta);
 
 		renderQueue.sort(comparator);
 
+		gl = Gdx.gl;
+		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
 		cam.update();
+
 		batch.setProjectionMatrix(cam.combined);
+
+/*
+		batch.enableBlending();
+		batch.setBlendFunction(GL20.GL_SRC_ALHPA,
+			GL20.GL_ONE_MINUS_SRC_ALPHA);
+*/
+
 		batch.begin();
 
 		for (Entity e : renderQueue) {

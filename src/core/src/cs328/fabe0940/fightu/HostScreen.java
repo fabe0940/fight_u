@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
+import cs328.fabe0940.fightu.systems.AnimationSystem;
 import cs328.fabe0940.fightu.systems.BoundsSystem;
 import cs328.fabe0940.fightu.systems.GravitySystem;
 import cs328.fabe0940.fightu.systems.MovementSystem;
@@ -46,6 +47,7 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 
 		engine = new Engine();
 
+		engine.addSystem(new AnimationSystem());
 		engine.addSystem(new BoundsSystem());
 	 	engine.addSystem(new GravitySystem());
 	 	engine.addSystem(new MovementSystem());
@@ -66,6 +68,7 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 
 		Gdx.app.debug("HostScreen:HostScreen", "Starting engine");
 
+		engine.getSystem(AnimationSystem.class).setProcessing(true);
 		engine.getSystem(BoundsSystem.class).setProcessing(true);
 		engine.getSystem(GravitySystem.class).setProcessing(true);
 		engine.getSystem(MovementSystem.class).setProcessing(true);

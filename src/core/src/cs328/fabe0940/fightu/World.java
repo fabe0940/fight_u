@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import cs328.fabe0940.fightu.components.AnimationComponent;
 import cs328.fabe0940.fightu.components.BoundsComponent;
 import cs328.fabe0940.fightu.components.GravityComponent;
 import cs328.fabe0940.fightu.components.HealthComponent;
@@ -31,6 +32,7 @@ public class World {
 
 	private void createPlayer() {
 		Entity e;
+		AnimationComponent animation;
 		BoundsComponent bounds;
 		GravityComponent gravity;
 		HealthComponent health;
@@ -43,6 +45,7 @@ public class World {
 
 		e = new Entity();
 
+		animation = new AnimationComponent();
 		bounds = new BoundsComponent();
 		gravity = new GravityComponent();
 		health = new HealthComponent();
@@ -53,6 +56,15 @@ public class World {
 		texture = new TextureComponent();
 		transform = new TransformComponent();
 
+		animation.animations.put(PlayerComponent.STATE_IDLE,
+			Assets.ryuIdle);
+		animation.animations.put(PlayerComponent.STATE_MOVE,
+			Assets.ryuIdle);
+		animation.animations.put(PlayerComponent.STATE_ATTACK,
+			Assets.ryuAttack);
+		animation.animations.put(PlayerComponent.STATE_HIT,
+			Assets.ryuIdle);
+
 		bounds.rect.width = PlayerComponent.WIDTH;
 		bounds.rect.height = PlayerComponent.HEIGHT;
 
@@ -62,6 +74,7 @@ public class World {
 
 		state.set(PlayerComponent.STATE_IDLE);
 
+		e.add(animation);
 		e.add(bounds);
 		e.add(gravity);
 		e.add(health);
