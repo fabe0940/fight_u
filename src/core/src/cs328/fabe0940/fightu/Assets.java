@@ -1,5 +1,6 @@
 package cs328.fabe0940.fightu;
 
+import java.io.IOException;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
@@ -19,12 +20,30 @@ public class Assets {
 	public static Sound menuHover;
 	public static Sound menuSelect;
 
+	public static GameServer server;
+
 	public static Texture loadTexture (String file) {
 		return new Texture(Gdx.files.internal(file));
 	}
 
 	public static void playSound(Sound sound) {
 		sound.play(1);
+	}
+
+	public static boolean startServer() {
+		try {
+			server = new GameServer();
+			(new Thread(server)).start();
+		} catch (IOException e) {
+			return false;
+		}
+
+		return true;
+	}
+
+	public static void stopServer() {
+		server.stop();
+		server = null;
 	}
 
 	public static void load () {
@@ -43,5 +62,7 @@ public class Assets {
 			Gdx.files.internal("sound/menu/hover.mp3"));
 		menuSelect = Gdx.audio.newSound(
 			Gdx.files.internal("sound/menu/select.mp3"));
+
+		server = null;
 	}
 }

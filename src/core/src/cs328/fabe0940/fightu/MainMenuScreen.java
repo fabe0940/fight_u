@@ -34,6 +34,10 @@ public class MainMenuScreen extends ScreenAdapter {
 
 		hoverHandled = false;
 
+		if (Assets.server != null) {
+			Assets.stopServer();
+		}
+
 		Assets.menuMusic.play();
 	}
 
@@ -52,15 +56,25 @@ public class MainMenuScreen extends ScreenAdapter {
 
 			if (hostBounds.contains(clickPos.x, clickPos.y)) {
 				Assets.playSound(Assets.menuSelect);
-				game.setScreen(new GameScreen(game));
+
+				if (!Assets.startServer()) {
+					Gdx.app.error("MainMenuScreen:update",
+						"Failed to start server");
+					game.setScreen(this);
+				} else {
+					game.setScreen(new GameScreen(game));
+				}
 			}
+
 			if (joinBounds.contains(clickPos.x, clickPos.y)) {
 				Assets.playSound(Assets.menuSelect);
 				game.setScreen(new GameScreen(game));
 			}
+
 			if (helpBounds.contains(clickPos.x, clickPos.y)) {
 				Assets.playSound(Assets.menuSelect);
 			}
+
 			if (exitBounds.contains(clickPos.x, clickPos.y)) {
 				Assets.playSound(Assets.menuSelect);
 				Gdx.app.exit();

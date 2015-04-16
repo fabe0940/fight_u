@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector3;
 
 public class GameScreen extends ScreenAdapter {
 	private final Main game;
+	private boolean clientFail;
 	private GameClient client;
 	private Engine engine;
 	private OrthographicCamera guiCam;
@@ -21,8 +22,9 @@ public class GameScreen extends ScreenAdapter {
 		game = m;
 
 		client = new GameClient();
+		clientFail = false;
 		if (!client.connect("127.0.0.1", Network.port)) {
-			game.setScreen(new MainMenuScreen(game));
+			clientFail = true;
 		}
 
 		engine = new Engine();
@@ -42,6 +44,9 @@ public class GameScreen extends ScreenAdapter {
 	}
 
 	public void update() {
+		if(clientFail) {
+			game.setScreen(new MainMenuScreen(game));
+		}
 	}
 
 	public void draw() {
