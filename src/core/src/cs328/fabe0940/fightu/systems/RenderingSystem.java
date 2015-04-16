@@ -1,0 +1,120 @@
+package cs328.fabe0940.fightu.systems;
+
+import java.util.Comparator;
+import com.badlogic.ashley.core.ComponentMapper;
+import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.Array;
+import cs328.fabe0940.fightu.components.TransformComponent;
+import cs328.fabe0940.fightu.components.TextureComponent;
+
+public class RenderingSystem extends IteratingSystem {
+	static final float FRUSTUM_WIDTH = 800;
+	static final float FRUSTUM_HEIGHT = 600;
+
+	private SpriteBatch batch;
+	private Array<Entity> renderQueue;
+	private Comparator<Entity> comparator;
+	private OrthographicCamera cam;
+
+	private ComponentMapper<TransformComponent> transM;
+	private ComponentMapper<TextureComponent> texM;
+
+	public RenderingSystem(SpriteBatch b) {
+		super(Family.getFor(TransformComponent.class,
+			TextureComponent.class));
+
+		transM = ComponentMapper.getFor(TransformComponent.class);
+		texM = ComponentMapper.getFor(TextureComponent.class);
+
+		renderQueue = new Array<Entity>();
+
+		comparator = new Comparator<Entity>() {
+			@Override
+			public int compare(Entity a, Entity b) {
+				float az;
+				float bz;
+
+				az = transM.get(a).pos.z;
+				bz = transM.get(b).pos.z;
+
+				return (int) Math.signum(bz - az);
+			}
+		};
+
+		batch = b;
+
+		cam = new OrthographicCamera(FRUSTUM_WIDTH, FRUSTUM_HEIGHT);
+		cam.position.set(FRUSTUM_WIDTH / 2, FRUSTUM_HEIGHT / 2, 0);
+	}
+
+	@Override
+	public void update(float delta) {
+		float originX;
+		float originY;
+		float width;
+		float height;
+		GL20 gl;
+		TransformComponent t;
+		TextureComponent tex;
+
+		Gdx.app.debug("RenderingSystem:update",
+			"Updating render");
+
+		super.update(delta);
+
+		renderQueue.sort(comparator);
+
+		gl = Gdx.gl;
+		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+		cam.update();
+
+		batch.setProjectionMatrix(cam.combined);
+
+/*
+		batch.enableBlending();
+		batch.setBlendFunction(GL20.GL_SRC_ALHPA,
+			GL20.GL_ONE_MINUS_SRC_ALPHA);
+*/
+
+		batch.begin();
+
+		for (Entity e : renderQueue) {
+			tex = texM.get(e);
+
+			if (tex.region == null) {
+				continue;
+			}
+
+			t = transM.get(e);
+
+			width = tex.region.getRegionWidth();
+			height = tex.region.getRegionHeight();
+			originX = width * 0.5f;
+			originY = height * 0.5f;
+
+			batch.draw(tex.region,
+				t.pos.x - originX, t.pos.y - originY,
+				originX, originY, width, height,
+				t.scale.x, t.scale.y,
+				MathUtils.radiansToDegrees * t.rotation);
+		}
+
+		batch.end();
+
+		renderQueue.clear();
+	}
+
+	@Override
+	public void processEntity(Entity e, float delta) {
+		renderQueue.add(e);
+	}
+}
