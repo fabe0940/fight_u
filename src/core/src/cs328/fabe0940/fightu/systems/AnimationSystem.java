@@ -38,11 +38,7 @@ public class AnimationSystem extends IteratingSystem {
 
 		a = anim.animations.get(state.get());
 
-		Gdx.app.debug("AnimationSystem:processEntity",
-			"Updating animation");
 		if (a != null) {
-			Gdx.app.debug("AnimationSystem:processEntity",
-				"Updating keyframe");
 			tex.region = a.getKeyFrame(state.time);
 		}
 

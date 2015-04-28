@@ -1,4 +1,4 @@
-package cs328.fabe0940.fightu;
+package cs328.fabe0940.fightu.screens;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.Gdx;
@@ -10,6 +10,10 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
+import cs328.fabe0940.fightu.Assets;
+import cs328.fabe0940.fightu.FightU;
+import cs328.fabe0940.fightu.net.GameClient;
+import cs328.fabe0940.fightu.net.Network;
 
 public class JoinScreen extends Listener implements Screen, InputProcessor {
 	private final FightU game;

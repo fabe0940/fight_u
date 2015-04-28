@@ -16,15 +16,10 @@ public class Assets {
 	public static Texture mainMenuJoin;
 	public static Texture mainMenuHelp;
 	public static Texture mainMenuExit;
-	public static Texture ryuSheet;
-	public static TextureRegion ryuIdle1;
-	public static TextureRegion ryuIdle2;
-	public static TextureRegion ryuIdle3;
-	public static TextureRegion ryuAttack1;
-	public static TextureRegion ryuAttack2;
-	public static TextureRegion ryuAttack3;
-	public static Animation ryuIdle;
-	public static Animation ryuAttack;
+	public static TextureRegion csIdle1;
+	public static TextureRegion csIdle2;
+	public static TextureRegion csIdle3;
+	public static Animation csIdle;
 	public static Music menuMusic;
 	public static Sound menuHover;
 	public static Sound menuSelect;
@@ -44,20 +39,16 @@ public class Assets {
 		mainMenuHelp = loadTexture("img/menu/help.png");
 		mainMenuExit = loadTexture("img/menu/exit.png");
 
-		ryuSheet = loadTexture("img/game/fighters/ryu/sheet.png");
-		ryuIdle1 = new TextureRegion(ryuSheet, 0, 0, 100, 100);
-		ryuIdle2 = new TextureRegion(ryuSheet, 100, 0, 100, 100);
-		ryuIdle3 = new TextureRegion(ryuSheet, 200, 0, 100, 100);
-		ryuAttack1 = new TextureRegion(ryuSheet, 0, 0, 100, 100);
-		ryuAttack2 = new TextureRegion(ryuSheet, 100, 100, 100, 100);
-		ryuAttack3 = new TextureRegion(ryuSheet, 200, 100, 100, 100);
+		csIdle1 = new TextureRegion(loadTexture(
+			"img/game/fighters/cs/idle_01.png"));
+		csIdle2 = new TextureRegion(loadTexture(
+			"img/game/fighters/cs/idle_02.png"));
+		csIdle3 = new TextureRegion(loadTexture(
+			"img/game/fighters/cs/idle_03.png"));
 
-		ryuIdle = new Animation(0.4f, ryuIdle1, ryuIdle2, ryuIdle3,
-			ryuIdle2);
-		ryuIdle.setPlayMode(PlayMode.LOOP);
-		ryuAttack = new Animation(0.2f, ryuAttack1, ryuAttack2,
-			ryuAttack3);
-		ryuAttack.setPlayMode(PlayMode.LOOP);
+		csIdle = new Animation(0.4f, csIdle1, csIdle2, csIdle3,
+			csIdle2);
+		csIdle.setPlayMode(PlayMode.LOOP);
 
 		menuMusic = Gdx.audio.newMusic(
 			Gdx.files.internal("sound/menu/bgmusic.mp3"));

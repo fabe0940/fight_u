@@ -1,9 +1,10 @@
-package cs328.fabe0940.fightu;
+package cs328.fabe0940.fightu.screens;
 
 import java.io.IOException;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -11,11 +12,14 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
+import cs328.fabe0940.fightu.Assets;
+import cs328.fabe0940.fightu.FightU;
+import cs328.fabe0940.fightu.model.World;
+import cs328.fabe0940.fightu.net.GameServer;
 import cs328.fabe0940.fightu.systems.AnimationSystem;
-import cs328.fabe0940.fightu.systems.BoundsSystem;
-import cs328.fabe0940.fightu.systems.GravitySystem;
-import cs328.fabe0940.fightu.systems.MovementSystem;
+import cs328.fabe0940.fightu.systems.PlayerSystem;
 import cs328.fabe0940.fightu.systems.RenderingSystem;
+import cs328.fabe0940.fightu.systems.ServerSystem;
 import cs328.fabe0940.fightu.systems.StateSystem;
 
 public class HostScreen extends Listener implements Screen, InputProcessor {
@@ -29,6 +33,8 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 
 	public HostScreen(FightU g) {
 		Gdx.app.debug("GameScreen:GameScreen", "Initializing");
+
+		Gdx.input.setInputProcessor(this);
 
 		game = g;
 
@@ -48,10 +54,9 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 		engine = new Engine();
 
 		engine.addSystem(new AnimationSystem());
-		engine.addSystem(new BoundsSystem());
-	 	engine.addSystem(new GravitySystem());
-	 	engine.addSystem(new MovementSystem());
+	 	engine.addSystem(new PlayerSystem());
 		engine.addSystem(new RenderingSystem(game.batcher));
+		engine.addSystem(new ServerSystem(server));
 		engine.addSystem(new StateSystem());
 
 		Gdx.app.debug("HostScreen:HostScreen", "Loading world");
@@ -69,10 +74,9 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 		Gdx.app.debug("HostScreen:HostScreen", "Starting engine");
 
 		engine.getSystem(AnimationSystem.class).setProcessing(true);
-		engine.getSystem(BoundsSystem.class).setProcessing(true);
-		engine.getSystem(GravitySystem.class).setProcessing(true);
-		engine.getSystem(MovementSystem.class).setProcessing(true);
+		engine.getSystem(PlayerSystem.class).setProcessing(true);
 		engine.getSystem(RenderingSystem.class).setProcessing(true);
+		engine.getSystem(ServerSystem.class).setProcessing(true);
 		engine.getSystem(StateSystem.class).setProcessing(true);
 	}
 
@@ -83,8 +87,6 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 	}
 
 	public void update(float delta) {
-		Gdx.app.debug("HostScreen:update", "Updating engine +" + delta);
-
 		if(serverFail) {
 			game.setScreen(new MainMenuScreen(game));
 		}
@@ -112,7 +114,12 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 
 	@Override
 	public boolean keyDown(int key) {
-		return false;
+		if (key == Keys.SPACE) {
+			Gdx.app.debug("HostScreen:keyDown", "JUMP!");
+			engine.getSystem(PlayerSystem.class).jump();
+		}
+
+		return true;
 	}
 
 	@Override

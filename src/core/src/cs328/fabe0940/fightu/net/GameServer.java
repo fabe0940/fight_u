@@ -1,4 +1,4 @@
-package cs328.fabe0940.fightu;
+package cs328.fabe0940.fightu.net;
 
 import java.io.IOException;
 import com.esotericsoftware.kryonet.Connection;
@@ -6,9 +6,9 @@ import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.minlog.Log;
 
-class GameServer {
+public class GameServer {
 	private boolean running;
-	private Server server;
+	public Server server;
 
 	public GameServer() throws IOException {
 		Log.set(Log.LEVEL_DEBUG);

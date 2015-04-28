@@ -1,4 +1,4 @@
-package cs328.fabe0940.fightu;
+package cs328.fabe0940.fightu.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import cs328.fabe0940.fightu.Assets;
+import cs328.fabe0940.fightu.FightU;
 
 public class MainMenuScreen extends ScreenAdapter {
 	private final FightU game;

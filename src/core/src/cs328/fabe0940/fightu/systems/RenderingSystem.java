@@ -15,8 +15,8 @@ import cs328.fabe0940.fightu.components.TransformComponent;
 import cs328.fabe0940.fightu.components.TextureComponent;
 
 public class RenderingSystem extends IteratingSystem {
-	static final float FRUSTUM_WIDTH = 800;
-	static final float FRUSTUM_HEIGHT = 600;
+	static final float FRUSTUM_WIDTH = 160;
+	static final float FRUSTUM_HEIGHT = 120;
 
 	private SpriteBatch batch;
 	private Array<Entity> renderQueue;
@@ -63,9 +63,6 @@ public class RenderingSystem extends IteratingSystem {
 		GL20 gl;
 		TransformComponent t;
 		TextureComponent tex;
-
-		Gdx.app.debug("RenderingSystem:update",
-			"Updating render");
 
 		super.update(delta);
 

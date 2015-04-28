@@ -1,4 +1,4 @@
-package cs328.fabe0940.fightu;
+package cs328.fabe0940.fightu.net;
 
 import java.io.IOException;
 import com.badlogic.gdx.Gdx;
