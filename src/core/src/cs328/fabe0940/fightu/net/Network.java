@@ -15,6 +15,9 @@ public class Network {
 		kryo = endPoint.getKryo();
 		kryo.register(StringMessage.class);
 		kryo.register(EntityMessage.class);
+		kryo.register(Array.class);
+		kryo.register(Entity.class);
+		kryo.register(Object[].class);
 	}
 
 	static public class StringMessage {
