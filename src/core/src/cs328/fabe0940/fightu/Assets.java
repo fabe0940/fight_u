@@ -19,7 +19,11 @@ public class Assets {
 	public static TextureRegion csIdle1;
 	public static TextureRegion csIdle2;
 	public static TextureRegion csIdle3;
+	public static TextureRegion csLight1;
+	public static TextureRegion csLight2;
+	public static TextureRegion csLight3;
 	public static Animation csIdle;
+	public static Animation csLight;
 	public static Music menuMusic;
 	public static Sound menuHover;
 	public static Sound menuSelect;
@@ -49,6 +53,16 @@ public class Assets {
 		csIdle = new Animation(0.4f, csIdle1, csIdle2, csIdle3,
 			csIdle2);
 		csIdle.setPlayMode(PlayMode.LOOP);
+
+		csLight1 = new TextureRegion(loadTexture(
+			"img/game/fighters/cs/light_01.png"));
+		csLight2 = new TextureRegion(loadTexture(
+			"img/game/fighters/cs/light_02.png"));
+		csLight3 = new TextureRegion(loadTexture(
+			"img/game/fighters/cs/light_03.png"));
+
+		csLight = new Animation(0.15f, csLight1, csLight2, csLight3, csLight2);
+		csLight.setPlayMode(PlayMode.NORMAL);
 
 		menuMusic = Gdx.audio.newMusic(
 			Gdx.files.internal("sound/menu/bgmusic.mp3"));

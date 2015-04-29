@@ -113,4 +113,16 @@ public class RenderingSystem extends IteratingSystem {
 	public void processEntity(Entity e, float delta) {
 		renderQueue.add(e);
 	}
+
+	public void setQueue(Array<Entity> queue) {
+		TransformComponent t;
+		TextureComponent tex;
+
+		if (queue == null) return;
+
+		for (Entity e : queue) {
+			Gdx.app.debug("RenderingSystem:setQueue", "New entity");
+			renderQueue.add(e);
+		}
+	}
 }

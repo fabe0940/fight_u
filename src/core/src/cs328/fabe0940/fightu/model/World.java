@@ -49,7 +49,7 @@ public class World {
 		animation.animations.put(PlayerComponent.STATE_MOVE,
 			Assets.csIdle);
 		animation.animations.put(PlayerComponent.STATE_ATTACK,
-			Assets.csIdle);
+			Assets.csLight);
 		animation.animations.put(PlayerComponent.STATE_HIT,
 			Assets.csIdle);
 

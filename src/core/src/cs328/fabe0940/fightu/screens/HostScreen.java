@@ -16,6 +16,7 @@ import cs328.fabe0940.fightu.Assets;
 import cs328.fabe0940.fightu.FightU;
 import cs328.fabe0940.fightu.model.World;
 import cs328.fabe0940.fightu.net.GameServer;
+import cs328.fabe0940.fightu.screens.MainMenuScreen;
 import cs328.fabe0940.fightu.systems.AnimationSystem;
 import cs328.fabe0940.fightu.systems.PlayerSystem;
 import cs328.fabe0940.fightu.systems.RenderingSystem;
@@ -40,7 +41,7 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 
 		serverFail = false;
 		try {
-			Gdx.app.log("", "Creating server...");
+			Gdx.app.log("HostScreen:HostScreen", "Creating server");
 			server = new GameServer();
 			server.listen(this);
 		} catch (IOException e) {
@@ -114,9 +115,24 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 
 	@Override
 	public boolean keyDown(int key) {
-		if (key == Keys.SPACE) {
-			Gdx.app.debug("HostScreen:keyDown", "JUMP!");
-			engine.getSystem(PlayerSystem.class).jump();
+		if (key == Keys.ESCAPE) {
+			Gdx.app.debug("HostScreen:keyDown", "Menu");
+			game.setScreen(new MainMenuScreen(game));
+		}
+
+		if (key == Keys.A) {
+			Gdx.app.debug("HostScreen:keyDown", "Light attack");
+			engine.getSystem(PlayerSystem.class).attackLight();
+		}
+
+		if (key == Keys.LEFT) {
+			Gdx.app.debug("HostScreen:keyDown", "Move left");
+			engine.getSystem(PlayerSystem.class).moveLeft(true);
+		}
+
+		if (key == Keys.RIGHT) {
+			Gdx.app.debug("HostScreen:keyDown", "Move right");
+			engine.getSystem(PlayerSystem.class).moveRight(true);
 		}
 
 		return true;
@@ -124,7 +140,17 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 
 	@Override
 	public boolean keyUp(int key) {
-		return false;
+		if (key == Keys.LEFT) {
+			Gdx.app.debug("HostScreen:keyDown", "Move left");
+			engine.getSystem(PlayerSystem.class).moveLeft(false);
+		}
+
+		if (key == Keys.RIGHT) {
+			Gdx.app.debug("HostScreen:keyDown", "Move right");
+			engine.getSystem(PlayerSystem.class).moveRight(false);
+		}
+
+		return true;
 	}
 
 	@Override
