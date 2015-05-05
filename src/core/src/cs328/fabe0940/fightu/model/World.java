@@ -27,14 +27,16 @@ public class World {
 	}
 
 	public void create() {
-		createPlayer(1, 32, 32, DIRECTION_LEFT);
-		createPlayer(2, 132, 32, DIRECTION_RIGHT);
+		createPlayer(1, 32, 30, DIRECTION_LEFT);
+		createPlayer(2, 132, 30, DIRECTION_RIGHT);
 	}
 
 	private void createPlayer(int ID, int x, int y, int dir) {
 		Entity e;
 		AnimationComponent animation;
 		HealthComponent health;
+		HitboxComponent hitbox;
+		HurtboxComponent hurtbox;
 		PlayerComponent player;
 		StateComponent state;
 		TextureComponent texture;
@@ -44,6 +46,8 @@ public class World {
 
 		animation = new AnimationComponent();
 		health = new HealthComponent();
+		hitbox = new HitboxComponent();
+		hurtbox = new HurtboxComponent();
 		player = new PlayerComponent();
 		state = new StateComponent();
 		texture = new TextureComponent();
@@ -85,6 +89,8 @@ public class World {
 
 		e.add(animation);
 		e.add(health);
+		e.add(hitbox);
+		e.add(hurtbox);
 		e.add(player);
 		e.add(state);
 		e.add(texture);

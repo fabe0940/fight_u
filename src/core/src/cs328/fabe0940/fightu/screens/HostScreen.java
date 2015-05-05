@@ -21,6 +21,7 @@ import cs328.fabe0940.fightu.net.GameServer;
 import cs328.fabe0940.fightu.net.Network;
 import cs328.fabe0940.fightu.screens.MainMenuScreen;
 import cs328.fabe0940.fightu.systems.AnimationSystem;
+import cs328.fabe0940.fightu.systems.HitSystem;
 import cs328.fabe0940.fightu.systems.PlayerSystem;
 import cs328.fabe0940.fightu.systems.RenderingSystem;
 import cs328.fabe0940.fightu.systems.ServerSystem;
@@ -68,6 +69,7 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 		engine = new Engine();
 
 		engine.addSystem(new AnimationSystem());
+		engine.addSystem(new HitSystem(engine));
 	 	engine.addSystem(new PlayerSystem());
 		engine.addSystem(new RenderingSystem(game.batcher));
 		engine.addSystem(new ServerSystem(engine, server));
@@ -100,6 +102,7 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 		Gdx.app.debug("HostScreen:HostScreen", "Starting engine");
 
 		engine.getSystem(AnimationSystem.class).setProcessing(true);
+		engine.getSystem(HitSystem.class).setProcessing(true);
 		engine.getSystem(PlayerSystem.class).setProcessing(true);
 		engine.getSystem(RenderingSystem.class).setProcessing(true);
 		engine.getSystem(StateSystem.class).setProcessing(true);
@@ -304,6 +307,7 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 	@Override
 	public void hide() {
 		engine.getSystem(AnimationSystem.class).setProcessing(false);
+		engine.getSystem(HitSystem.class).setProcessing(false);
 		engine.getSystem(PlayerSystem.class).setProcessing(false);
 		engine.getSystem(RenderingSystem.class).setProcessing(false);
 		engine.getSystem(ServerSystem.class).setProcessing(false);

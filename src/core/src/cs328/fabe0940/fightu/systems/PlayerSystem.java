@@ -5,7 +5,10 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Rectangle;
 import cs328.fabe0940.fightu.components.HealthComponent;
+import cs328.fabe0940.fightu.components.HitboxComponent;
+import cs328.fabe0940.fightu.components.HurtboxComponent;
 import cs328.fabe0940.fightu.components.MovementComponent;
 import cs328.fabe0940.fightu.components.PlayerComponent;
 import cs328.fabe0940.fightu.components.StateComponent;
@@ -17,6 +20,8 @@ public class PlayerSystem extends IteratingSystem {
 	private boolean[] light;
 	private int[] health;
 	private ComponentMapper<HealthComponent> hm;
+	private ComponentMapper<HitboxComponent> hitM;
+	private ComponentMapper<HurtboxComponent> hurtM;
 	private ComponentMapper<MovementComponent> mm;
 	private ComponentMapper<PlayerComponent> pm;
 	private ComponentMapper<StateComponent> sm;
@@ -34,6 +39,8 @@ public class PlayerSystem extends IteratingSystem {
 		health[2] = 0;
 
 		hm = ComponentMapper.getFor(HealthComponent.class);
+		hitM = ComponentMapper.getFor(HitboxComponent.class);
+		hurtM = ComponentMapper.getFor(HurtboxComponent.class);
 		mm = ComponentMapper.getFor(MovementComponent.class);
 		pm = ComponentMapper.getFor(PlayerComponent.class);
 		sm = ComponentMapper.getFor(StateComponent.class);
@@ -42,11 +49,15 @@ public class PlayerSystem extends IteratingSystem {
 
 	@Override
 	public void processEntity(Entity e, float delta) {
+		HitboxComponent hit;
+		HurtboxComponent hurt;
 		MovementComponent mov;
 		PlayerComponent p;
 		StateComponent s;
 		TransformComponent pos;
 
+		hit = hitM.get(e);
+		hurt = hurtM.get(e);
 		mov = mm.get(e);
 		p = pm.get(e);
 		s = sm.get(e);
@@ -56,13 +67,17 @@ public class PlayerSystem extends IteratingSystem {
 
 		if (left[p.ID]) {
 			pos.pos.set(pos.pos.x - 1, pos.pos.y, 0);
+			pos.pos.x = pos.pos.x < 0 ? 0 : pos.pos.x;
 		}
 
 		if (right[p.ID]) {
 			pos.pos.set(pos.pos.x + 1, pos.pos.y, 0);
+			pos.pos.x = pos.pos.x > 160 ? 160 : pos.pos.x;
 		}
 
 		if (light[p.ID]) {
+			hit.enabled = true;
+
 			if (s.state == PlayerComponent.STATE_LEFT_IDLE) {
 				s.set(PlayerComponent.STATE_LEFT_ATTACK);
 			}
@@ -82,6 +97,26 @@ public class PlayerSystem extends IteratingSystem {
 			if (s.get() == PlayerComponent.STATE_RIGHT_ATTACK) {
 				s.set(PlayerComponent.STATE_RIGHT_IDLE);
 			}
+		}
+
+		switch (s.state) {
+			case PlayerComponent.STATE_LEFT_ATTACK:
+			case PlayerComponent.STATE_RIGHT_ATTACK:
+				hit.rect = new Rectangle(pos.pos.x, pos.pos.y,
+					64, 64);
+
+				hurt.enabled = false;
+				hurt.rect = new Rectangle(pos.pos.x, pos.pos.y,
+					0, 0);
+				break;
+			default:
+				hit.enabled = false;
+				hit.rect = new Rectangle(pos.pos.x, pos.pos.y,
+					0, 0);
+
+				hurt.enabled = true;
+				hurt.rect = new Rectangle(pos.pos.x, pos.pos.y,
+					64, 64);
 		}
 	}
 
