@@ -5,8 +5,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.esotericsoftware.kryonet.Connection;
@@ -22,6 +25,7 @@ import cs328.fabe0940.fightu.systems.PlayerSystem;
 import cs328.fabe0940.fightu.systems.RenderingSystem;
 import cs328.fabe0940.fightu.systems.ServerSystem;
 import cs328.fabe0940.fightu.systems.StateSystem;
+import cs328.fabe0940.fightu.systems.TimerSystem;
 import java.io.IOException;
 import java.lang.InterruptedException;
 
@@ -29,6 +33,8 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 	private final FightU game;
 	private boolean serverFail;
 	private int numClients;
+	private BitmapFont timerFont;
+	private FreeTypeFontGenerator fgen;
 	private GameServer server;
 	private Engine engine;
 	private World world;
@@ -36,6 +42,8 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 	private Vector3 clickPos;
 
 	public HostScreen(FightU g) {
+		String fname;
+
 		Gdx.app.debug("GameScreen:GameScreen", "Initializing");
 
 		Gdx.input.setInputProcessor(this);
@@ -61,8 +69,9 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 		engine.addSystem(new AnimationSystem());
 	 	engine.addSystem(new PlayerSystem());
 		engine.addSystem(new RenderingSystem(game.batcher));
-		engine.addSystem(new ServerSystem(server));
+		engine.addSystem(new ServerSystem(engine, server));
 		engine.addSystem(new StateSystem());
+		engine.addSystem(new TimerSystem());
 
 		Gdx.app.debug("HostScreen:HostScreen", "Loading world");
 
@@ -74,6 +83,12 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 		guiCam = new OrthographicCamera(800, 600);
 		guiCam.position.set(800 / 2, 600 / 2, 0);
 
+		Gdx.app.debug("HostScreen:HostScreen", "Loading fonts");
+		fname = "font/helsinki.ttf";
+		fgen = new FreeTypeFontGenerator(Gdx.files.internal(fname));
+		timerFont = fgen.generateFont(80);
+		timerFont.setColor(Color.RED);
+
 		Assets.menuMusic.stop();
 
 		Gdx.app.debug("HostScreen:HostScreen", "Starting engine");
@@ -82,6 +97,7 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 		engine.getSystem(PlayerSystem.class).setProcessing(true);
 		engine.getSystem(RenderingSystem.class).setProcessing(true);
 		engine.getSystem(StateSystem.class).setProcessing(true);
+		engine.getSystem(TimerSystem.class).setProcessing(true);
 	}
 
 	@Override
@@ -91,6 +107,9 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 	}
 
 	public void update(float delta) {
+		int time;
+		Network.GameOverMessage msg;
+
 		if(serverFail) {
 			game.setScreen(new MainMenuScreen(game));
 		}
@@ -98,9 +117,37 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 		if (delta > 0.1f) delta = 0.1f;
 
 		engine.update(delta);
+
+		time = (int) engine.getSystem(TimerSystem.class).get();
+		if (time == 0) {
+			msg = new Network.GameOverMessage();
+			msg.winner = 0;
+
+			server.server.sendToAllTCP(msg);
+
+			game.setScreen(new MainMenuScreen(game));
+		}
 	}
 
 	public void draw() {
+		int time;
+
+		guiCam.update();
+		game.batcher.setProjectionMatrix(guiCam.combined);
+
+		Gdx.gl20.glEnable(GL20.GL_BLEND);
+		Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA,
+			GL20.GL_ONE_MINUS_SRC_ALPHA);
+		Gdx.gl20.glEnable(GL20.GL_TEXTURE_2D);
+		Gdx.gl20.glBlendEquation(GL20.GL_BLEND);
+
+		game.batcher.enableBlending();
+		game.batcher.begin();
+
+		time = (int) engine.getSystem(TimerSystem.class).get();
+		timerFont.draw(game.batcher, Integer.toString(time), 350, 580);
+
+		game.batcher.end();
 	}
 
 	public void connected(Connection c) {

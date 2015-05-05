@@ -6,9 +6,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
@@ -33,18 +36,24 @@ import java.io.IOException;
 public class JoinScreen extends Listener implements Screen, InputProcessor {
 	private final FightU game;
 	private boolean clientFail;
+	private int time;
+	private BitmapFont timerFont;
+	private FreeTypeFontGenerator fgen;
 	private GameClient client;
 	private Engine engine;
 	private OrthographicCamera guiCam;
 	private Vector3 clickPos;
 
 	public JoinScreen(FightU g) {
+		String fname;
+
 		Gdx.app.debug("GameScreen:GameScreen", "Initializing");
 
 		Gdx.input.setInputProcessor(this);
 
 		game = g;
 
+		Gdx.app.debug("HostScreen:HostScreen", "Connecting to server");
 		client = new GameClient();
 		client.listen(this);
 		clientFail = false;
@@ -52,13 +61,21 @@ public class JoinScreen extends Listener implements Screen, InputProcessor {
 			clientFail = true;
 		}
 
+		Gdx.app.debug("HostScreen:HostScreen", "Loading camera");
 		engine = new Engine();
 		engine.addSystem(new RenderingSystem(game.batcher));
 
+		Gdx.app.debug("HostScreen:HostScreen", "Loading fonts");
 		guiCam = new OrthographicCamera(Gdx.graphics.getWidth(),
 			Gdx.graphics.getHeight());
 		guiCam.position.set(Gdx.graphics.getWidth() / 2,
 			Gdx.graphics.getHeight() / 2, 0);
+
+		Gdx.app.debug("HostScreen:HostScreen", "Loading fonts");
+		fname = "font/helsinki.ttf";
+		fgen = new FreeTypeFontGenerator(Gdx.files.internal(fname));
+		timerFont = fgen.generateFont(80);
+		timerFont.setColor(Color.RED);
 
 		Assets.menuMusic.stop();
 
@@ -82,6 +99,21 @@ public class JoinScreen extends Listener implements Screen, InputProcessor {
 	}
 
 	public void draw() {
+		guiCam.update();
+		game.batcher.setProjectionMatrix(guiCam.combined);
+
+		Gdx.gl20.glEnable(GL20.GL_BLEND);
+		Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA,
+			GL20.GL_ONE_MINUS_SRC_ALPHA);
+		Gdx.gl20.glEnable(GL20.GL_TEXTURE_2D);
+		Gdx.gl20.glBlendEquation(GL20.GL_BLEND);
+
+		game.batcher.enableBlending();
+		game.batcher.begin();
+
+		timerFont.draw(game.batcher, Integer.toString(time), 350, 580);
+
+		game.batcher.end();
 	}
 
 	public void connected(Connection c) {
@@ -160,6 +192,14 @@ public class JoinScreen extends Listener implements Screen, InputProcessor {
 		if (o instanceof Network.EntityClearMessage) {
 			rs = engine.getSystem(RenderingSystem.class);
 			if (rs != null) rs.netClear();
+		}
+
+		if (o instanceof Network.GameOverMessage) {
+			game.setScreen(new MainMenuScreen(game));
+		}
+
+		if (o instanceof Network.TimeMessage) {
+			time = ((Network.TimeMessage) o).time;
 		}
 	}
 
