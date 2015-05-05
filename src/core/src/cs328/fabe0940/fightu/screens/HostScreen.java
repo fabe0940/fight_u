@@ -33,6 +33,7 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 	private final FightU game;
 	private boolean serverFail;
 	private int numClients;
+	private BitmapFont healthFont;
 	private BitmapFont timerFont;
 	private FreeTypeFontGenerator fgen;
 	private GameServer server;
@@ -44,7 +45,7 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 	public HostScreen(FightU g) {
 		String fname;
 
-		Gdx.app.debug("GameScreen:GameScreen", "Initializing");
+		Gdx.app.debug("HostScreen:HostScreen", "Initializing");
 
 		Gdx.input.setInputProcessor(this);
 
@@ -84,8 +85,13 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 		guiCam.position.set(800 / 2, 600 / 2, 0);
 
 		Gdx.app.debug("HostScreen:HostScreen", "Loading fonts");
+
 		fname = "font/helsinki.ttf";
 		fgen = new FreeTypeFontGenerator(Gdx.files.internal(fname));
+
+		healthFont = fgen.generateFont(50);
+		healthFont.setColor(Color.GREEN);
+
 		timerFont = fgen.generateFont(80);
 		timerFont.setColor(Color.RED);
 
@@ -131,6 +137,7 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 
 	public void draw() {
 		int time;
+		int health;
 
 		guiCam.update();
 		game.batcher.setProjectionMatrix(guiCam.combined);
@@ -147,6 +154,14 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 		time = (int) engine.getSystem(TimerSystem.class).get();
 		timerFont.draw(game.batcher, Integer.toString(time), 350, 580);
 
+		health = engine.getSystem(PlayerSystem.class).getHealth(1);
+		healthFont.draw(game.batcher, Integer.toString(health),
+			20, 580);
+
+		health = engine.getSystem(PlayerSystem.class).getHealth(2);
+		healthFont.draw(game.batcher, Integer.toString(health),
+			640, 580);
+
 		game.batcher.end();
 	}
 
@@ -155,6 +170,12 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 			+ (numClients + 1));
 
 		numClients++;
+
+		try {
+			Thread.sleep(250);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 
 		if (numClients == 1) {
 			engine.getSystem(
@@ -177,11 +198,7 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 	public void received(Connection c, Object o) {
 		int key;
 
-		Gdx.app.debug("HostScreen:recieved", "New message");
-
 		if (o instanceof Network.KeyDownMessage) {
-			Gdx.app.debug("HostScreen:recieved", "KeyDownMessage");
-
 			key = ((Network.KeyDownMessage) o).keycode;
 
 			if (key == Keys.A) {
@@ -201,8 +218,6 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 			}
 
 		if (o instanceof Network.KeyUpMessage) {
-			Gdx.app.debug("HostScreen:recieved", "KeyUpMessage");
-
 			key = ((Network.KeyUpMessage) o).keycode;
 
 			if (key == Keys.LEFT) {
@@ -224,22 +239,18 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 	@Override
 	public boolean keyDown(int key) {
 		if (key == Keys.ESCAPE) {
-			Gdx.app.debug("HostScreen:keyDown", "Menu");
 			game.setScreen(new MainMenuScreen(game));
 		}
 
 		if (key == Keys.A) {
-			Gdx.app.debug("HostScreen:keyDown", "Light attack");
 			engine.getSystem(PlayerSystem.class).attackLight(1);
 		}
 
 		if (key == Keys.LEFT) {
-			Gdx.app.debug("HostScreen:keyDown", "Move left");
 			engine.getSystem(PlayerSystem.class).moveLeft(1, true);
 		}
 
 		if (key == Keys.RIGHT) {
-			Gdx.app.debug("HostScreen:keyDown", "Move right");
 			engine.getSystem(PlayerSystem.class).moveRight(1, true);
 		}
 
@@ -249,12 +260,10 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 	@Override
 	public boolean keyUp(int key) {
 		if (key == Keys.LEFT) {
-			Gdx.app.debug("HostScreen:keyDown", "Move left");
 			engine.getSystem(PlayerSystem.class).moveLeft(1, false);
 		}
 
 		if (key == Keys.RIGHT) {
-			Gdx.app.debug("HostScreen:keyDown", "Move right");
 			engine.getSystem(PlayerSystem.class).moveRight(1,
 				false);
 		}
@@ -294,6 +303,14 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 
 	@Override
 	public void hide() {
+		engine.getSystem(AnimationSystem.class).setProcessing(false);
+		engine.getSystem(PlayerSystem.class).setProcessing(false);
+		engine.getSystem(RenderingSystem.class).setProcessing(false);
+		engine.getSystem(ServerSystem.class).setProcessing(false);
+		engine.getSystem(StateSystem.class).setProcessing(false);
+		engine.getSystem(TimerSystem.class).setProcessing(false);
+
+		server.server.stop();
 	}
 
 	@Override

@@ -19,6 +19,7 @@ public class Network {
 		kryo.register(EntityMessage.class);
 		kryo.register(EntityClearMessage.class);
 		kryo.register(GameOverMessage.class);
+		kryo.register(HealthMessage.class);
 		kryo.register(KeyDownMessage.class);
 		kryo.register(KeyUpMessage.class);
 		kryo.register(StringMessage.class);
@@ -39,6 +40,11 @@ public class Network {
 
 	static public class GameOverMessage {
 		public int winner;
+	}
+
+	static public class HealthMessage {
+		public int health1;
+		public int health2;
 	}
 
 	static public class KeyDownMessage {

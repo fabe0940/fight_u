@@ -37,6 +37,8 @@ public class JoinScreen extends Listener implements Screen, InputProcessor {
 	private final FightU game;
 	private boolean clientFail;
 	private int time;
+	private int[] health;
+	private BitmapFont healthFont;
 	private BitmapFont timerFont;
 	private FreeTypeFontGenerator fgen;
 	private GameClient client;
@@ -47,13 +49,13 @@ public class JoinScreen extends Listener implements Screen, InputProcessor {
 	public JoinScreen(FightU g) {
 		String fname;
 
-		Gdx.app.debug("GameScreen:GameScreen", "Initializing");
+		Gdx.app.debug("JoinScreen:JoinScreen", "Initializing");
 
 		Gdx.input.setInputProcessor(this);
 
 		game = g;
 
-		Gdx.app.debug("HostScreen:HostScreen", "Connecting to server");
+		Gdx.app.debug("JoinScreen:JoinScreen", "Connecting to server");
 		client = new GameClient();
 		client.listen(this);
 		clientFail = false;
@@ -61,21 +63,27 @@ public class JoinScreen extends Listener implements Screen, InputProcessor {
 			clientFail = true;
 		}
 
-		Gdx.app.debug("HostScreen:HostScreen", "Loading camera");
+		Gdx.app.debug("JoinScreen:JoinScreen", "Loading engine");
 		engine = new Engine();
 		engine.addSystem(new RenderingSystem(game.batcher));
 
-		Gdx.app.debug("HostScreen:HostScreen", "Loading fonts");
+		Gdx.app.debug("JoinScreen:JoinScreen", "Loading camera");
 		guiCam = new OrthographicCamera(Gdx.graphics.getWidth(),
 			Gdx.graphics.getHeight());
 		guiCam.position.set(Gdx.graphics.getWidth() / 2,
 			Gdx.graphics.getHeight() / 2, 0);
 
-		Gdx.app.debug("HostScreen:HostScreen", "Loading fonts");
+		Gdx.app.debug("JoinScreen:JoinScreen", "Loading fonts");
 		fname = "font/helsinki.ttf";
 		fgen = new FreeTypeFontGenerator(Gdx.files.internal(fname));
+
+		healthFont = fgen.generateFont(50);
+		healthFont.setColor(Color.GREEN);
+
 		timerFont = fgen.generateFont(80);
 		timerFont.setColor(Color.RED);
+
+		health = new int[3];
 
 		Assets.menuMusic.stop();
 
@@ -112,14 +120,17 @@ public class JoinScreen extends Listener implements Screen, InputProcessor {
 		game.batcher.begin();
 
 		timerFont.draw(game.batcher, Integer.toString(time), 350, 580);
+		healthFont.draw(game.batcher, Integer.toString(health[1]),
+			20, 580);
+
+		healthFont.draw(game.batcher, Integer.toString(health[2]),
+			640, 580);
 
 		game.batcher.end();
 	}
 
 	public void connected(Connection c) {
 		Network.StringMessage msg;
-
-		Gdx.app.debug("JoinScreen:connected", "Connected to server!");
 
 		msg = new Network.StringMessage();
 		msg.text = "HELLO";
@@ -132,6 +143,7 @@ public class JoinScreen extends Listener implements Screen, InputProcessor {
 
 	public void received(Connection c, Object o) {
 		Network.EntityMessage msg;
+		Network.HealthMessage hmsg;
 		Entity e;
 		Animation a;
 		AnimationComponent animation;
@@ -198,7 +210,14 @@ public class JoinScreen extends Listener implements Screen, InputProcessor {
 			game.setScreen(new MainMenuScreen(game));
 		}
 
+		if (o instanceof Network.HealthMessage) {
+			if (o == null) return;
+			health[1] = ((Network.HealthMessage) o).health1;
+			health[2] = ((Network.HealthMessage) o).health2;
+		}
+
 		if (o instanceof Network.TimeMessage) {
+			if (o == null) return;
 			time = ((Network.TimeMessage) o).time;
 		}
 	}
@@ -212,11 +231,8 @@ public class JoinScreen extends Listener implements Screen, InputProcessor {
 		Network.KeyDownMessage msg;
 
 		if (key == Keys.ESCAPE) {
-			Gdx.app.debug("HostScreen:keyDown", "Menu");
 			game.setScreen(new MainMenuScreen(game));
 		}
-
-		Gdx.app.debug("JoinScreen:keyDown", "Pressed: " + key);
 
 		msg = new Network.KeyDownMessage();
 		msg.keycode = key;
@@ -229,8 +245,6 @@ public class JoinScreen extends Listener implements Screen, InputProcessor {
 	@Override
 	public boolean keyUp(int key) {
 		Network.KeyUpMessage msg;
-
-		Gdx.app.debug("JoinScreen:keyUp", "Released: " + key);
 
 		msg = new Network.KeyUpMessage();
 		msg.keycode = key;
@@ -272,6 +286,9 @@ public class JoinScreen extends Listener implements Screen, InputProcessor {
 
 	@Override
 	public void hide() {
+		engine.getSystem(RenderingSystem.class).setProcessing(false);
+
+		client.client.stop();
 	}
 
 	@Override

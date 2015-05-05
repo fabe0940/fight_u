@@ -34,6 +34,7 @@ public class World {
 	private void createPlayer(int ID, int x, int y, int dir) {
 		Entity e;
 		AnimationComponent animation;
+		HealthComponent health;
 		PlayerComponent player;
 		StateComponent state;
 		TextureComponent texture;
@@ -42,6 +43,7 @@ public class World {
 		e = new Entity();
 
 		animation = new AnimationComponent();
+		health = new HealthComponent();
 		player = new PlayerComponent();
 		state = new StateComponent();
 		texture = new TextureComponent();
@@ -82,6 +84,7 @@ public class World {
 		}
 
 		e.add(animation);
+		e.add(health);
 		e.add(player);
 		e.add(state);
 		e.add(texture);

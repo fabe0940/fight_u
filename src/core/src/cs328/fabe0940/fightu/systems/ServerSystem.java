@@ -34,17 +34,24 @@ public class ServerSystem extends IteratingSystem {
 	@Override
 	public void update(float delta) {
 		Network.EntityClearMessage clearMsg;
+		Network.HealthMessage healthMsg;
 		Network.TimeMessage timeMsg;
 
 		super.update(delta);
 
 		clearMsg = new Network.EntityClearMessage();
+		server.server.sendToAllTCP(clearMsg);
 		
 		timeMsg = new Network.TimeMessage();
 		timeMsg.time = (int) engine.getSystem(TimerSystem.class).get();
-
-		server.server.sendToAllTCP(clearMsg);
 		server.server.sendToAllTCP(timeMsg);
+
+		healthMsg = new Network.HealthMessage();
+		healthMsg.health1 = engine.getSystem(
+			PlayerSystem.class).getHealth(1);
+		healthMsg.health2 = engine.getSystem(
+			PlayerSystem.class).getHealth(2);
+		server.server.sendToAllTCP(healthMsg);
 	}
 
 	@Override

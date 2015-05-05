@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
+import cs328.fabe0940.fightu.components.HealthComponent;
 import cs328.fabe0940.fightu.components.MovementComponent;
 import cs328.fabe0940.fightu.components.PlayerComponent;
 import cs328.fabe0940.fightu.components.StateComponent;
@@ -14,6 +15,8 @@ public class PlayerSystem extends IteratingSystem {
 	private boolean[] left;
 	private boolean[] right;
 	private boolean[] light;
+	private int[] health;
+	private ComponentMapper<HealthComponent> hm;
 	private ComponentMapper<MovementComponent> mm;
 	private ComponentMapper<PlayerComponent> pm;
 	private ComponentMapper<StateComponent> sm;
@@ -25,7 +28,12 @@ public class PlayerSystem extends IteratingSystem {
 		left = new boolean[3];
 		right = new boolean[3];
 		light = new boolean[3];
+		health = new int[3];
+		health[0] = 0;
+		health[1] = 0;
+		health[2] = 0;
 
+		hm = ComponentMapper.getFor(HealthComponent.class);
 		mm = ComponentMapper.getFor(MovementComponent.class);
 		pm = ComponentMapper.getFor(PlayerComponent.class);
 		sm = ComponentMapper.getFor(StateComponent.class);
@@ -43,6 +51,8 @@ public class PlayerSystem extends IteratingSystem {
 		p = pm.get(e);
 		s = sm.get(e);
 		pos = tm.get(e);
+
+		health[p.ID] = hm.get(e).health;
 
 		if (left[p.ID]) {
 			pos.pos.set(pos.pos.x - 1, pos.pos.y, 0);
@@ -73,6 +83,10 @@ public class PlayerSystem extends IteratingSystem {
 				s.set(PlayerComponent.STATE_RIGHT_IDLE);
 			}
 		}
+	}
+
+	public int getHealth(int ID) {
+		return health[ID];
 	}
 
 	public void moveLeft(int ID, boolean b) {
