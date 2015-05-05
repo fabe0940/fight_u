@@ -18,7 +18,7 @@ public class GameClient {
 	public Client client;
 
 	public GameClient() {
-		Log.set(Log.LEVEL_DEBUG);
+		Log.set(Log.LEVEL_INFO);
 
 		state = STATE_NEW;
 

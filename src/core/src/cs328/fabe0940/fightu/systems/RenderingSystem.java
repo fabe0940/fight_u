@@ -19,6 +19,7 @@ public class RenderingSystem extends IteratingSystem {
 	static final float FRUSTUM_HEIGHT = 120;
 
 	private SpriteBatch batch;
+	private Array<Entity> netQueue;
 	private Array<Entity> renderQueue;
 	private Comparator<Entity> comparator;
 	private OrthographicCamera cam;
@@ -33,6 +34,7 @@ public class RenderingSystem extends IteratingSystem {
 		transM = ComponentMapper.getFor(TransformComponent.class);
 		texM = ComponentMapper.getFor(TextureComponent.class);
 
+		netQueue = new Array<Entity>();
 		renderQueue = new Array<Entity>();
 
 		comparator = new Comparator<Entity>() {
@@ -65,6 +67,10 @@ public class RenderingSystem extends IteratingSystem {
 		TextureComponent tex;
 
 		super.update(delta);
+
+		for (Entity e : netQueue) {
+			renderQueue.add(e);
+		}
 
 		renderQueue.sort(comparator);
 
@@ -114,15 +120,11 @@ public class RenderingSystem extends IteratingSystem {
 		renderQueue.add(e);
 	}
 
-	public void setQueue(Array<Entity> queue) {
-		TransformComponent t;
-		TextureComponent tex;
+	public void netAdd(Entity e) {
+		renderQueue.add(e);
+	}
 
-		if (queue == null) return;
-
-		for (Entity e : queue) {
-			Gdx.app.debug("RenderingSystem:setQueue", "New entity");
-			renderQueue.add(e);
-		}
+	public void netClear() {
+		netQueue.clear();
 	}
 }

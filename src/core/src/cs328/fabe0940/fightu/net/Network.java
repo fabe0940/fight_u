@@ -2,9 +2,12 @@ package cs328.fabe0940.fightu.net;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
+import cs328.fabe0940.fightu.components.StateComponent;
+import cs328.fabe0940.fightu.components.TransformComponent;
 
 public class Network {
 	static public final int port = 13370;
@@ -13,11 +16,13 @@ public class Network {
 		Kryo kryo;
 
 		kryo = endPoint.getKryo();
-		kryo.register(StringMessage.class);
 		kryo.register(EntityMessage.class);
-		kryo.register(Array.class);
-		kryo.register(Entity.class);
-		kryo.register(Object[].class);
+		kryo.register(EntityClearMessage.class);
+		kryo.register(StringMessage.class);
+		kryo.register(StateComponent.class);
+		kryo.register(TransformComponent.class);
+		kryo.register(Vector2.class);
+		kryo.register(Vector3.class);
 	}
 
 	static public class StringMessage {
@@ -25,6 +30,10 @@ public class Network {
 	}
 
 	static public class EntityMessage {
-		public Array<Entity> entities;
+		public StateComponent state;
+		public TransformComponent pos;
+	}
+
+	static public class EntityClearMessage {
 	}
 }

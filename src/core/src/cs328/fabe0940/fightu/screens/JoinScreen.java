@@ -1,19 +1,33 @@
 package cs328.fabe0940.fightu.screens;
 
 import com.badlogic.ashley.core.Engine;
+import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import cs328.fabe0940.fightu.Assets;
 import cs328.fabe0940.fightu.FightU;
+import cs328.fabe0940.fightu.components.AnimationComponent;
+import cs328.fabe0940.fightu.components.HealthComponent;
+import cs328.fabe0940.fightu.components.HitboxComponent;
+import cs328.fabe0940.fightu.components.HurtboxComponent;
+import cs328.fabe0940.fightu.components.PlayerComponent;
+import cs328.fabe0940.fightu.components.StateComponent;
+import cs328.fabe0940.fightu.components.TextureComponent;
+import cs328.fabe0940.fightu.components.TransformComponent;
 import cs328.fabe0940.fightu.net.GameClient;
 import cs328.fabe0940.fightu.net.Network;
+import cs328.fabe0940.fightu.screens.MainMenuScreen;
+import cs328.fabe0940.fightu.systems.RenderingSystem;
+import java.io.IOException;
 
 public class JoinScreen extends Listener implements Screen, InputProcessor {
 	private final FightU game;
@@ -26,6 +40,8 @@ public class JoinScreen extends Listener implements Screen, InputProcessor {
 	public JoinScreen(FightU g) {
 		Gdx.app.debug("GameScreen:GameScreen", "Initializing");
 
+		Gdx.input.setInputProcessor(this);
+
 		game = g;
 
 		client = new GameClient();
@@ -36,6 +52,7 @@ public class JoinScreen extends Listener implements Screen, InputProcessor {
 		}
 
 		engine = new Engine();
+		engine.addSystem(new RenderingSystem(game.batcher));
 
 		guiCam = new OrthographicCamera(Gdx.graphics.getWidth(),
 			Gdx.graphics.getHeight());
@@ -43,50 +60,79 @@ public class JoinScreen extends Listener implements Screen, InputProcessor {
 			Gdx.graphics.getHeight() / 2, 0);
 
 		Assets.menuMusic.stop();
+
+		engine.getSystem(RenderingSystem.class).setProcessing(true);
 	}
 
 	@Override
 	public void render(float delta) {
-		update();
+		update(delta);
 		draw();
 	}
 
-	public void update() {
+	public void update(float delta) {
 		if(clientFail) {
 			game.setScreen(new MainMenuScreen(game));
 		}
+
+		if (delta > 0.1f) delta = 0.1f;
+
+		engine.update(delta);
 	}
 
 	public void draw() {
-		GL20 gl = Gdx.gl;
-		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-		gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-		guiCam.update();
-		game.batcher.setProjectionMatrix(guiCam.combined);
-
-		game.batcher.disableBlending();
-		game.batcher.begin();
-		game.batcher.end();
-
-		game.batcher.enableBlending();
-		game.batcher.begin();
-		game.batcher.end();
 	}
 
 	public void connected(Connection c) {
-		Network.StringMessage msg;
-
-		msg = new Network.StringMessage();
-		msg.text = "NEW CONNECTION";
-
-		client.client.sendTCP(msg);
 	}
 
 	public void disconnected(Connection c) {
 	}
 
-	public void recieved(Connection c, Object o) {
+	public void received(Connection c, Object o) {
+		Network.EntityMessage msg;
+		Entity e;
+		Animation a;
+		AnimationComponent animation;
+		PlayerComponent player;
+		StateComponent state;
+		TextureComponent texture;
+		TransformComponent transform;
+
+		if (o instanceof Network.EntityMessage) {
+			msg = (Network.EntityMessage) o;
+			e = new Entity();
+
+			animation = new AnimationComponent();
+			player = new PlayerComponent();
+			state = msg.state;
+			texture = new TextureComponent();
+			transform = msg.pos;
+
+			animation.animations.put(PlayerComponent.STATE_IDLE,
+				Assets.csIdle);
+			animation.animations.put(PlayerComponent.STATE_MOVE,
+				Assets.csIdle);
+			animation.animations.put(PlayerComponent.STATE_ATTACK,
+				Assets.csLight);
+			animation.animations.put(PlayerComponent.STATE_HIT,
+				Assets.csIdle);
+
+			a = animation.animations.get(state.get());
+			texture.region = a.getKeyFrame(state.time);
+
+			e.add(animation);
+			e.add(player);
+			e.add(state);
+			e.add(texture);
+			e.add(transform);
+
+			engine.getSystem(RenderingSystem.class).netAdd(e);
+		}
+
+		if (o instanceof Network.EntityClearMessage) {
+			engine.getSystem(RenderingSystem.class).netClear();
+		}
 	}
 
 	@Override

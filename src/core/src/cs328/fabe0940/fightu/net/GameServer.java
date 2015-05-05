@@ -11,7 +11,7 @@ public class GameServer {
 	public Server server;
 
 	public GameServer() throws IOException {
-		Log.set(Log.LEVEL_DEBUG);
+		Log.set(Log.LEVEL_INFO);
 
 		server = new Server();
 
