@@ -1,6 +1,5 @@
 package cs328.fabe0940.fightu.screens;
 
-import java.io.IOException;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
@@ -16,16 +15,20 @@ import cs328.fabe0940.fightu.Assets;
 import cs328.fabe0940.fightu.FightU;
 import cs328.fabe0940.fightu.model.World;
 import cs328.fabe0940.fightu.net.GameServer;
+import cs328.fabe0940.fightu.net.Network;
 import cs328.fabe0940.fightu.screens.MainMenuScreen;
 import cs328.fabe0940.fightu.systems.AnimationSystem;
 import cs328.fabe0940.fightu.systems.PlayerSystem;
 import cs328.fabe0940.fightu.systems.RenderingSystem;
 import cs328.fabe0940.fightu.systems.ServerSystem;
 import cs328.fabe0940.fightu.systems.StateSystem;
+import java.io.IOException;
+import java.lang.InterruptedException;
 
 public class HostScreen extends Listener implements Screen, InputProcessor {
 	private final FightU game;
 	private boolean serverFail;
+	private int numClients;
 	private GameServer server;
 	private Engine engine;
 	private World world;
@@ -44,6 +47,7 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 			Gdx.app.log("HostScreen:HostScreen", "Creating server");
 			server = new GameServer();
 			server.listen(this);
+			numClients = 0;
 		} catch (IOException e) {
 			Gdx.app.error("HostScreen:HostScreen",
 				"Unable to create server");
@@ -77,7 +81,6 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 		engine.getSystem(AnimationSystem.class).setProcessing(true);
 		engine.getSystem(PlayerSystem.class).setProcessing(true);
 		engine.getSystem(RenderingSystem.class).setProcessing(true);
-		engine.getSystem(ServerSystem.class).setProcessing(true);
 		engine.getSystem(StateSystem.class).setProcessing(true);
 	}
 
@@ -101,12 +104,70 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 	}
 
 	public void connected(Connection c) {
+		Gdx.app.debug("HostScreen:connected", "Clients: "
+			+ (numClients + 1));
+
+		numClients++;
+
+		if (numClients == 1) {
+			engine.getSystem(
+				ServerSystem.class).setProcessing(true);
+		}
 	}
 
 	public void disconnected(Connection c) {
+		Gdx.app.debug("HostScreen:disconnected", "Clients: "
+			+ (numClients - 1));
+
+		numClients--;
+
+		if (numClients == 0) {
+			engine.getSystem(
+				ServerSystem.class).setProcessing(false);
+		}
 	}
 
-	public void recieved(Connection c, Object o) {
+	public void received(Connection c, Object o) {
+		int key;
+
+		Gdx.app.debug("HostScreen:recieved", "New message");
+
+		if (o instanceof Network.KeyDownMessage) {
+			Gdx.app.debug("HostScreen:recieved", "KeyDownMessage");
+
+			key = ((Network.KeyDownMessage) o).keycode;
+
+			if (key == Keys.A) {
+				engine.getSystem(
+					PlayerSystem.class).attackLight(2);
+			}
+
+			if (key == Keys.LEFT) {
+				engine.getSystem(
+					PlayerSystem.class).moveLeft(2, true);
+			}
+
+			if (key == Keys.RIGHT) {
+				engine.getSystem(
+					PlayerSystem.class).moveRight(2, true);
+			}
+			}
+
+		if (o instanceof Network.KeyUpMessage) {
+			Gdx.app.debug("HostScreen:recieved", "KeyUpMessage");
+
+			key = ((Network.KeyUpMessage) o).keycode;
+
+			if (key == Keys.LEFT) {
+				engine.getSystem(
+					PlayerSystem.class).moveLeft(2, false);
+			}
+
+			if (key == Keys.RIGHT) {
+				engine.getSystem(
+					PlayerSystem.class).moveRight(2, false);
+			}
+		}
 	}
 
 	@Override
@@ -122,17 +183,17 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 
 		if (key == Keys.A) {
 			Gdx.app.debug("HostScreen:keyDown", "Light attack");
-			engine.getSystem(PlayerSystem.class).attackLight();
+			engine.getSystem(PlayerSystem.class).attackLight(1);
 		}
 
 		if (key == Keys.LEFT) {
 			Gdx.app.debug("HostScreen:keyDown", "Move left");
-			engine.getSystem(PlayerSystem.class).moveLeft(true);
+			engine.getSystem(PlayerSystem.class).moveLeft(1, true);
 		}
 
 		if (key == Keys.RIGHT) {
 			Gdx.app.debug("HostScreen:keyDown", "Move right");
-			engine.getSystem(PlayerSystem.class).moveRight(true);
+			engine.getSystem(PlayerSystem.class).moveRight(1, true);
 		}
 
 		return true;
@@ -142,12 +203,13 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 	public boolean keyUp(int key) {
 		if (key == Keys.LEFT) {
 			Gdx.app.debug("HostScreen:keyDown", "Move left");
-			engine.getSystem(PlayerSystem.class).moveLeft(false);
+			engine.getSystem(PlayerSystem.class).moveLeft(1, false);
 		}
 
 		if (key == Keys.RIGHT) {
 			Gdx.app.debug("HostScreen:keyDown", "Move right");
-			engine.getSystem(PlayerSystem.class).moveRight(false);
+			engine.getSystem(PlayerSystem.class).moveRight(1,
+				false);
 		}
 
 		return true;

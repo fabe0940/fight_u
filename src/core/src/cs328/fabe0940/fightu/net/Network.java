@@ -18,6 +18,8 @@ public class Network {
 		kryo = endPoint.getKryo();
 		kryo.register(EntityMessage.class);
 		kryo.register(EntityClearMessage.class);
+		kryo.register(KeyDownMessage.class);
+		kryo.register(KeyUpMessage.class);
 		kryo.register(StringMessage.class);
 		kryo.register(StateComponent.class);
 		kryo.register(TransformComponent.class);
@@ -35,5 +37,13 @@ public class Network {
 	}
 
 	static public class EntityClearMessage {
+	}
+
+	static public class KeyDownMessage {
+		public int keycode;
+	}
+
+	static public class KeyUpMessage {
+		public int keycode;
 	}
 }

@@ -16,14 +16,22 @@ public class Assets {
 	public static Texture mainMenuJoin;
 	public static Texture mainMenuHelp;
 	public static Texture mainMenuExit;
-	public static TextureRegion csIdle1;
-	public static TextureRegion csIdle2;
-	public static TextureRegion csIdle3;
-	public static TextureRegion csLight1;
-	public static TextureRegion csLight2;
-	public static TextureRegion csLight3;
-	public static Animation csIdle;
-	public static Animation csLight;
+	public static TextureRegion csLeftIdle1;
+	public static TextureRegion csLeftIdle2;
+	public static TextureRegion csLeftIdle3;
+	public static TextureRegion csLeftLight1;
+	public static TextureRegion csLeftLight2;
+	public static TextureRegion csLeftLight3;
+	public static TextureRegion csRightIdle1;
+	public static TextureRegion csRightIdle2;
+	public static TextureRegion csRightIdle3;
+	public static TextureRegion csRightLight1;
+	public static TextureRegion csRightLight2;
+	public static TextureRegion csRightLight3;
+	public static Animation csLeftIdle;
+	public static Animation csLeftLight;
+	public static Animation csRightIdle;
+	public static Animation csRightLight;
 	public static Music menuMusic;
 	public static Sound menuHover;
 	public static Sound menuSelect;
@@ -43,26 +51,43 @@ public class Assets {
 		mainMenuHelp = loadTexture("img/menu/help.png");
 		mainMenuExit = loadTexture("img/menu/exit.png");
 
-		csIdle1 = new TextureRegion(loadTexture(
-			"img/game/fighters/cs/idle_01.png"));
-		csIdle2 = new TextureRegion(loadTexture(
-			"img/game/fighters/cs/idle_02.png"));
-		csIdle3 = new TextureRegion(loadTexture(
-			"img/game/fighters/cs/idle_03.png"));
+		csLeftIdle1 = new TextureRegion(loadTexture(
+			"img/game/fighters/cs/left_idle_01.png"));
+		csLeftIdle2 = new TextureRegion(loadTexture(
+			"img/game/fighters/cs/left_idle_02.png"));
+		csLeftIdle3 = new TextureRegion(loadTexture(
+			"img/game/fighters/cs/left_idle_03.png"));
+		csLeftLight1 = new TextureRegion(loadTexture(
+			"img/game/fighters/cs/left_light_01.png"));
+		csLeftLight2 = new TextureRegion(loadTexture(
+			"img/game/fighters/cs/left_light_02.png"));
+		csLeftLight3 = new TextureRegion(loadTexture(
+			"img/game/fighters/cs/left_light_03.png"));
+		csRightIdle1 = new TextureRegion(loadTexture(
+			"img/game/fighters/cs/right_idle_01.png"));
+		csRightIdle2 = new TextureRegion(loadTexture(
+			"img/game/fighters/cs/right_idle_02.png"));
+		csRightIdle3 = new TextureRegion(loadTexture(
+			"img/game/fighters/cs/right_idle_03.png"));
+		csRightLight1 = new TextureRegion(loadTexture(
+			"img/game/fighters/cs/right_light_01.png"));
+		csRightLight2 = new TextureRegion(loadTexture(
+			"img/game/fighters/cs/right_light_02.png"));
+		csRightLight3 = new TextureRegion(loadTexture(
+			"img/game/fighters/cs/right_light_03.png"));
 
-		csIdle = new Animation(0.4f, csIdle1, csIdle2, csIdle3,
-			csIdle2);
-		csIdle.setPlayMode(PlayMode.LOOP);
-
-		csLight1 = new TextureRegion(loadTexture(
-			"img/game/fighters/cs/light_01.png"));
-		csLight2 = new TextureRegion(loadTexture(
-			"img/game/fighters/cs/light_02.png"));
-		csLight3 = new TextureRegion(loadTexture(
-			"img/game/fighters/cs/light_03.png"));
-
-		csLight = new Animation(0.15f, csLight1, csLight2, csLight3, csLight2);
-		csLight.setPlayMode(PlayMode.NORMAL);
+		csLeftIdle = new Animation(0.4f, csLeftIdle1, csLeftIdle2,
+			csLeftIdle3, csLeftIdle2);
+		csLeftIdle.setPlayMode(PlayMode.LOOP);
+		csLeftLight = new Animation(0.15f, csLeftLight1, csLeftLight2,
+			csLeftLight3, csLeftLight2);
+		csLeftLight.setPlayMode(PlayMode.NORMAL);
+		csRightIdle = new Animation(0.4f, csRightIdle1, csRightIdle2,
+			csRightIdle3, csRightIdle2);
+		csRightIdle.setPlayMode(PlayMode.LOOP);
+		csRightLight = new Animation(0.15f, csRightLight1,
+			csRightLight2, csRightLight3, csRightLight2);
+		csRightLight.setPlayMode(PlayMode.NORMAL);
 
 		menuMusic = Gdx.audio.newMusic(
 			Gdx.files.internal("sound/menu/bgmusic.mp3"));

@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -84,6 +85,14 @@ public class JoinScreen extends Listener implements Screen, InputProcessor {
 	}
 
 	public void connected(Connection c) {
+		Network.StringMessage msg;
+
+		Gdx.app.debug("JoinScreen:connected", "Connected to server!");
+
+		msg = new Network.StringMessage();
+		msg.text = "HELLO";
+
+		client.client.sendTCP(msg);
 	}
 
 	public void disconnected(Connection c) {
@@ -95,6 +104,7 @@ public class JoinScreen extends Listener implements Screen, InputProcessor {
 		Animation a;
 		AnimationComponent animation;
 		PlayerComponent player;
+		RenderingSystem rs;
 		StateComponent state;
 		TextureComponent texture;
 		TransformComponent transform;
@@ -109,14 +119,30 @@ public class JoinScreen extends Listener implements Screen, InputProcessor {
 			texture = new TextureComponent();
 			transform = msg.pos;
 
-			animation.animations.put(PlayerComponent.STATE_IDLE,
-				Assets.csIdle);
-			animation.animations.put(PlayerComponent.STATE_MOVE,
-				Assets.csIdle);
-			animation.animations.put(PlayerComponent.STATE_ATTACK,
-				Assets.csLight);
-			animation.animations.put(PlayerComponent.STATE_HIT,
-				Assets.csIdle);
+			animation.animations.put(
+				PlayerComponent.STATE_LEFT_IDLE,
+				Assets.csLeftIdle);
+			animation.animations.put(
+				PlayerComponent.STATE_LEFT_MOVE,
+				Assets.csLeftIdle);
+			animation.animations.put(
+				PlayerComponent.STATE_LEFT_ATTACK,
+				Assets.csLeftLight);
+			animation.animations.put(
+				PlayerComponent.STATE_LEFT_HIT,
+				Assets.csLeftIdle);
+			animation.animations.put(
+				PlayerComponent.STATE_RIGHT_IDLE,
+				Assets.csRightIdle);
+			animation.animations.put(
+				PlayerComponent.STATE_RIGHT_MOVE,
+				Assets.csRightIdle);
+			animation.animations.put(
+				PlayerComponent.STATE_RIGHT_ATTACK,
+				Assets.csRightLight);
+			animation.animations.put(
+				PlayerComponent.STATE_RIGHT_HIT,
+				Assets.csRightIdle);
 
 			a = animation.animations.get(state.get());
 			texture.region = a.getKeyFrame(state.time);
@@ -127,11 +153,13 @@ public class JoinScreen extends Listener implements Screen, InputProcessor {
 			e.add(texture);
 			e.add(transform);
 
-			engine.getSystem(RenderingSystem.class).netAdd(e);
+			rs = engine.getSystem(RenderingSystem.class);
+			if (rs != null && e != null) rs.netAdd(e);
 		}
 
 		if (o instanceof Network.EntityClearMessage) {
-			engine.getSystem(RenderingSystem.class).netClear();
+			rs = engine.getSystem(RenderingSystem.class);
+			if (rs != null) rs.netClear();
 		}
 	}
 
@@ -141,12 +169,35 @@ public class JoinScreen extends Listener implements Screen, InputProcessor {
 
 	@Override
 	public boolean keyDown(int key) {
-		return false;
+		Network.KeyDownMessage msg;
+
+		if (key == Keys.ESCAPE) {
+			Gdx.app.debug("HostScreen:keyDown", "Menu");
+			game.setScreen(new MainMenuScreen(game));
+		}
+
+		Gdx.app.debug("JoinScreen:keyDown", "Pressed: " + key);
+
+		msg = new Network.KeyDownMessage();
+		msg.keycode = key;
+
+		client.client.sendTCP(msg);
+
+		return true;
 	}
 
 	@Override
 	public boolean keyUp(int key) {
-		return false;
+		Network.KeyUpMessage msg;
+
+		Gdx.app.debug("JoinScreen:keyUp", "Released: " + key);
+
+		msg = new Network.KeyUpMessage();
+		msg.keycode = key;
+
+		client.client.sendTCP(msg);
+
+		return true;
 	}
 
 	@Override

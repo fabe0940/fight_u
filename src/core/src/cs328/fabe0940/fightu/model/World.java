@@ -15,6 +15,8 @@ import cs328.fabe0940.fightu.components.TextureComponent;
 import cs328.fabe0940.fightu.components.TransformComponent;
 
 public class World {
+	public static final int DIRECTION_LEFT = 1;
+	public static final int DIRECTION_RIGHT = 2;
 	public static final float floor = 100.0f;
 	public static final Vector2 gravity = new Vector2(0.0f, -3000.0f);
 
@@ -25,10 +27,11 @@ public class World {
 	}
 
 	public void create() {
-		createPlayer();
+		createPlayer(1, 32, 32, DIRECTION_LEFT);
+		createPlayer(2, 132, 32, DIRECTION_RIGHT);
 	}
 
-	private void createPlayer() {
+	private void createPlayer(int ID, int x, int y, int dir) {
 		Entity e;
 		AnimationComponent animation;
 		PlayerComponent player;
@@ -44,20 +47,39 @@ public class World {
 		texture = new TextureComponent();
 		transform = new TransformComponent();
 
-		animation.animations.put(PlayerComponent.STATE_IDLE,
-			Assets.csIdle);
-		animation.animations.put(PlayerComponent.STATE_MOVE,
-			Assets.csIdle);
-		animation.animations.put(PlayerComponent.STATE_ATTACK,
-			Assets.csLight);
-		animation.animations.put(PlayerComponent.STATE_HIT,
-			Assets.csIdle);
+		animation.animations.put(PlayerComponent.STATE_LEFT_IDLE,
+			Assets.csLeftIdle);
+		animation.animations.put(PlayerComponent.STATE_LEFT_MOVE,
+			Assets.csLeftIdle);
+		animation.animations.put(PlayerComponent.STATE_LEFT_ATTACK,
+			Assets.csLeftLight);
+		animation.animations.put(PlayerComponent.STATE_LEFT_HIT,
+			Assets.csLeftIdle);
+		animation.animations.put(PlayerComponent.STATE_RIGHT_IDLE,
+			Assets.csRightIdle);
+		animation.animations.put(PlayerComponent.STATE_RIGHT_MOVE,
+			Assets.csRightIdle);
+		animation.animations.put(PlayerComponent.STATE_RIGHT_ATTACK,
+			Assets.csRightLight);
+		animation.animations.put(PlayerComponent.STATE_RIGHT_HIT,
+			Assets.csRightIdle);
 
-		texture.region = Assets.csIdle1;
+		player.ID = ID;
 
-		transform.pos.set(32, 32, 0);
+		texture.region = Assets.csLeftIdle1;
 
-		state.set(PlayerComponent.STATE_IDLE);
+		transform.pos.set(x, y, 0);
+
+		switch (dir) {
+			case DIRECTION_LEFT:
+				state.set(PlayerComponent.STATE_LEFT_IDLE);
+				break;
+			case DIRECTION_RIGHT:
+				state.set(PlayerComponent.STATE_RIGHT_IDLE);
+				break;
+			default:
+				state.set(PlayerComponent.STATE_LEFT_IDLE);
+		}
 
 		e.add(animation);
 		e.add(player);
