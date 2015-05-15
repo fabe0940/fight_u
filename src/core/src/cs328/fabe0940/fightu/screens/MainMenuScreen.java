@@ -64,6 +64,7 @@ public class MainMenuScreen extends ScreenAdapter {
 
 			if (helpBounds.contains(clickPos.x, clickPos.y)) {
 				Assets.playSound(Assets.menuSelect);
+				game.setScreen(new HelpScreen(game));
 			}
 
 			if (exitBounds.contains(clickPos.x, clickPos.y)) {

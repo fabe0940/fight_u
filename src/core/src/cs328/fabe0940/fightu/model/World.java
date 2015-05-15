@@ -27,8 +27,29 @@ public class World {
 	}
 
 	public void create() {
-		createPlayer(1, 32, 30, DIRECTION_LEFT);
-		createPlayer(2, 132, 30, DIRECTION_RIGHT);
+		createPlayer(1, 32, 32, DIRECTION_LEFT);
+		createPlayer(2, 132, 32, DIRECTION_RIGHT);
+		createBackground();
+	}
+
+	public void createBackground() {
+		Entity e;
+		TextureComponent texture;
+		TransformComponent transform;
+
+		e = new Entity();
+
+		texture = new TextureComponent();
+		transform = new TransformComponent();
+
+		texture.region = Assets.gameBG;
+
+		transform.pos.set(80, 60, 1);
+
+		e.add(texture);
+		e.add(transform);
+
+		engine.addEntity(e);
 	}
 
 	private void createPlayer(int ID, int x, int y, int dir) {
@@ -57,18 +78,18 @@ public class World {
 			Assets.csLeftIdle);
 		animation.animations.put(PlayerComponent.STATE_LEFT_MOVE,
 			Assets.csLeftIdle);
-		animation.animations.put(PlayerComponent.STATE_LEFT_ATTACK,
+		animation.animations.put(PlayerComponent.STATE_LEFT_LIGHT_ATTACK,
 			Assets.csLeftLight);
-		animation.animations.put(PlayerComponent.STATE_LEFT_HIT,
-			Assets.csLeftIdle);
+		animation.animations.put(PlayerComponent.STATE_LEFT_HEAVY_ATTACK,
+			Assets.csLeftHeavy);
 		animation.animations.put(PlayerComponent.STATE_RIGHT_IDLE,
 			Assets.csRightIdle);
 		animation.animations.put(PlayerComponent.STATE_RIGHT_MOVE,
 			Assets.csRightIdle);
-		animation.animations.put(PlayerComponent.STATE_RIGHT_ATTACK,
+		animation.animations.put(PlayerComponent.STATE_RIGHT_LIGHT_ATTACK,
 			Assets.csRightLight);
-		animation.animations.put(PlayerComponent.STATE_RIGHT_HIT,
-			Assets.csRightIdle);
+		animation.animations.put(PlayerComponent.STATE_RIGHT_HEAVY_ATTACK,
+			Assets.csRightHeavy);
 
 		player.ID = ID;
 

@@ -27,6 +27,7 @@ import cs328.fabe0940.fightu.components.PlayerComponent;
 import cs328.fabe0940.fightu.components.StateComponent;
 import cs328.fabe0940.fightu.components.TextureComponent;
 import cs328.fabe0940.fightu.components.TransformComponent;
+import cs328.fabe0940.fightu.model.World;
 import cs328.fabe0940.fightu.net.GameClient;
 import cs328.fabe0940.fightu.net.Network;
 import cs328.fabe0940.fightu.screens.MainMenuScreen;
@@ -44,6 +45,7 @@ public class JoinScreen extends Listener implements Screen, InputProcessor {
 	private GameClient client;
 	private Engine engine;
 	private OrthographicCamera guiCam;
+	private World world;
 	private Vector3 clickPos;
 
 	public JoinScreen(FightU g) {
@@ -67,6 +69,10 @@ public class JoinScreen extends Listener implements Screen, InputProcessor {
 		engine = new Engine();
 		engine.addSystem(new RenderingSystem(game.batcher));
 
+		Gdx.app.debug("HostScreen:HostScreen", "Loading world");
+		world = new World(engine);
+		world.createBackground();
+
 		Gdx.app.debug("JoinScreen:JoinScreen", "Loading camera");
 		guiCam = new OrthographicCamera(Gdx.graphics.getWidth(),
 			Gdx.graphics.getHeight());
@@ -84,8 +90,6 @@ public class JoinScreen extends Listener implements Screen, InputProcessor {
 		timerFont.setColor(Color.RED);
 
 		health = new int[3];
-
-		Assets.menuMusic.stop();
 
 		engine.getSystem(RenderingSystem.class).setProcessing(true);
 	}
@@ -170,8 +174,11 @@ public class JoinScreen extends Listener implements Screen, InputProcessor {
 				PlayerComponent.STATE_LEFT_MOVE,
 				Assets.csLeftIdle);
 			animation.animations.put(
-				PlayerComponent.STATE_LEFT_ATTACK,
+				PlayerComponent.STATE_LEFT_LIGHT_ATTACK,
 				Assets.csLeftLight);
+			animation.animations.put(
+				PlayerComponent.STATE_LEFT_HEAVY_ATTACK,
+				Assets.csLeftHeavy);
 			animation.animations.put(
 				PlayerComponent.STATE_LEFT_HIT,
 				Assets.csLeftIdle);
@@ -182,8 +189,11 @@ public class JoinScreen extends Listener implements Screen, InputProcessor {
 				PlayerComponent.STATE_RIGHT_MOVE,
 				Assets.csRightIdle);
 			animation.animations.put(
-				PlayerComponent.STATE_RIGHT_ATTACK,
+				PlayerComponent.STATE_RIGHT_LIGHT_ATTACK,
 				Assets.csRightLight);
+			animation.animations.put(
+				PlayerComponent.STATE_RIGHT_HEAVY_ATTACK,
+				Assets.csRightHeavy);
 			animation.animations.put(
 				PlayerComponent.STATE_RIGHT_HIT,
 				Assets.csRightIdle);

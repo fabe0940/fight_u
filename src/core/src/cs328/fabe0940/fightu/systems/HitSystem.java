@@ -11,12 +11,16 @@ import com.badlogic.gdx.math.Intersector;
 import cs328.fabe0940.fightu.components.HealthComponent;
 import cs328.fabe0940.fightu.components.HitboxComponent;
 import cs328.fabe0940.fightu.components.HurtboxComponent;
+import cs328.fabe0940.fightu.components.PlayerComponent;
+import cs328.fabe0940.fightu.components.StateComponent;
 
 public class HitSystem extends IteratingSystem {
 	private Engine engine;
 	private ComponentMapper<HealthComponent> healthM;
 	private ComponentMapper<HitboxComponent> hitM;
 	private ComponentMapper<HurtboxComponent> hurtM;
+	private ComponentMapper<PlayerComponent> pm;
+	private ComponentMapper<StateComponent> sm;
 
 	public HitSystem(Engine e) {
 		super(Family.getFor(HitboxComponent.class));
@@ -26,6 +30,8 @@ public class HitSystem extends IteratingSystem {
 		healthM = ComponentMapper.getFor(HealthComponent.class);
 		hitM = ComponentMapper.getFor(HitboxComponent.class);
 		hurtM = ComponentMapper.getFor(HurtboxComponent.class);
+		pm = ComponentMapper.getFor(PlayerComponent.class);
+		sm = ComponentMapper.getFor(StateComponent.class);
 	}
 
 	@Override
@@ -50,12 +56,33 @@ public class HitSystem extends IteratingSystem {
 			health = healthM.get(target);
 			hurt = hurtM.get(target);
 
+			if (pm.get(e).ID == pm.get(target).ID) continue;
 			if (hurt.enabled != true) continue;
 
 			if (hit.enabled && Intersector.overlaps(hit.rect, hurt.rect)) {
 				Gdx.app.debug("HitSystem:processEntity", "HIT");
 				hit.enabled = false;
-				health.health -= 100;
+
+				switch (sm.get(e).get()) {
+					case PlayerComponent.STATE_LEFT_LIGHT_ATTACK:
+						health.health -= 100;
+						sm.get(target).set(PlayerComponent.STATE_RIGHT_HIT);
+						break;
+					case PlayerComponent.STATE_RIGHT_LIGHT_ATTACK:
+						health.health -= 100;
+						sm.get(target).set(PlayerComponent.STATE_LEFT_HIT);
+						break;
+					case PlayerComponent.STATE_LEFT_HEAVY_ATTACK:
+						health.health -= 1000;
+						sm.get(target).set(PlayerComponent.STATE_RIGHT_HIT);
+						break;
+					case PlayerComponent.STATE_RIGHT_HEAVY_ATTACK:
+						health.health -= 1000;
+						sm.get(target).set(PlayerComponent.STATE_LEFT_HIT);
+						break;
+					default:
+						health.health -= 10;
+				}
 			}
 		}
 	}

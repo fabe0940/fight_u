@@ -18,6 +18,7 @@ public class PlayerSystem extends IteratingSystem {
 	private boolean[] left;
 	private boolean[] right;
 	private boolean[] light;
+	private boolean[] heavy;
 	private int[] health;
 	private ComponentMapper<HealthComponent> hm;
 	private ComponentMapper<HitboxComponent> hitM;
@@ -33,6 +34,7 @@ public class PlayerSystem extends IteratingSystem {
 		left = new boolean[3];
 		right = new boolean[3];
 		light = new boolean[3];
+		heavy = new boolean[3];
 		health = new int[3];
 		health[0] = 0;
 		health[1] = 0;
@@ -79,35 +81,126 @@ public class PlayerSystem extends IteratingSystem {
 			hit.enabled = true;
 
 			if (s.state == PlayerComponent.STATE_LEFT_IDLE) {
-				s.set(PlayerComponent.STATE_LEFT_ATTACK);
+				s.set(PlayerComponent.STATE_LEFT_LIGHT_ATTACK);
 			}
 
 			if (s.state == PlayerComponent.STATE_RIGHT_IDLE) {
-				s.set(PlayerComponent.STATE_RIGHT_ATTACK);
+				s.set(PlayerComponent.STATE_RIGHT_LIGHT_ATTACK);
 			}
 
 			light[p.ID] = false;
 		}
 
+		if (heavy[p.ID]) {
+			hit.enabled = true;
+
+			if (s.state == PlayerComponent.STATE_LEFT_IDLE) {
+				s.set(PlayerComponent.STATE_LEFT_HEAVY_ATTACK);
+			}
+
+			if (s.state == PlayerComponent.STATE_RIGHT_IDLE) {
+				s.set(PlayerComponent.STATE_RIGHT_HEAVY_ATTACK);
+			}
+
+			heavy[p.ID] = false;
+		}
+
+		if (s.time > 0.1) {
+			if (s.get() == PlayerComponent.STATE_LEFT_HIT) {
+				s.set(PlayerComponent.STATE_LEFT_IDLE);	
+			}
+
+			if (s.get() == PlayerComponent.STATE_RIGHT_HIT) {
+				s.set(PlayerComponent.STATE_RIGHT_IDLE);	
+			}
+		}
+
 		if (s.time > 0.6) {
-			if (s.get() == PlayerComponent.STATE_LEFT_ATTACK) {
+			if (s.get() == PlayerComponent.STATE_LEFT_LIGHT_ATTACK) {
 				s.set(PlayerComponent.STATE_LEFT_IDLE);
 			}
 
-			if (s.get() == PlayerComponent.STATE_RIGHT_ATTACK) {
+			if (s.get() == PlayerComponent.STATE_RIGHT_LIGHT_ATTACK) {
+				s.set(PlayerComponent.STATE_RIGHT_IDLE);
+			}
+		}
+
+		if (s.time > 1.05) {
+			if (s.get() == PlayerComponent.STATE_LEFT_HEAVY_ATTACK) {
+				s.set(PlayerComponent.STATE_LEFT_IDLE);
+			}
+
+			if (s.get() == PlayerComponent.STATE_RIGHT_HEAVY_ATTACK) {
 				s.set(PlayerComponent.STATE_RIGHT_IDLE);
 			}
 		}
 
 		switch (s.state) {
-			case PlayerComponent.STATE_LEFT_ATTACK:
-			case PlayerComponent.STATE_RIGHT_ATTACK:
+			case PlayerComponent.STATE_LEFT_LIGHT_ATTACK:
+				if (s.time >= 0.15 && s.time < 0.30) {
+					hit.rect = new Rectangle(
+						pos.pos.x + 6, pos.pos.y - 6,
+						9, 10);
+				} else if (s.time >= 0.30 && s.time < 0.45) {
+					hit.rect = new Rectangle(
+						pos.pos.x + 8, pos.pos.y - 11,
+						13, 20);
+				} else {
+					hit.rect = new Rectangle(0, 0, 0, 0);
+				}
+				break;
+			case PlayerComponent.STATE_RIGHT_LIGHT_ATTACK:
+				if (s.time >= 0.15 && s.time < 0.30) {
+					hit.rect = new Rectangle(
+						pos.pos.x - 17, pos.pos.y - 6,
+						11, 10);
+				} else if (s.time >= 0.30 && s.time < 0.45) {
+					hit.rect = new Rectangle(
+						pos.pos.x - 23, pos.pos.y - 11,
+						17, 15);
+				} else {
+					hit.rect = new Rectangle(0, 0, 0, 0);
+				}
+				break;
+			case PlayerComponent.STATE_LEFT_HEAVY_ATTACK:
+				if (s.time >= 0.30 && s.time < 0.75) {
+					hit.rect = new Rectangle(
+						pos.pos.x + 8, pos.pos.y - 10,
+						18, 33);
+				} else {
+					hit.rect = new Rectangle(0, 0, 0, 0);
+				}
+				break;
+			case PlayerComponent.STATE_RIGHT_HEAVY_ATTACK:
+				if (s.time >= 0.30 && s.time < 0.75) {
+					hit.rect = new Rectangle(
+						pos.pos.x - 28, pos.pos.y - 11,
+						18, 35);
+				} else {
+					hit.rect = new Rectangle(0, 0, 0, 0);
+				}
+				break;
+			case PlayerComponent.STATE_LEFT_IDLE:
+			case PlayerComponent.STATE_LEFT_MOVE:
+			case PlayerComponent.STATE_LEFT_HIT:
+				hit.enabled = false;
 				hit.rect = new Rectangle(pos.pos.x, pos.pos.y,
-					64, 64);
-
-				hurt.enabled = false;
-				hurt.rect = new Rectangle(pos.pos.x, pos.pos.y,
 					0, 0);
+
+				hurt.enabled = true;
+				hurt.rect = new Rectangle(
+					pos.pos.x - 11, pos.pos.y - 31, 21, 56);
+				break;
+			case PlayerComponent.STATE_RIGHT_IDLE:
+			case PlayerComponent.STATE_RIGHT_MOVE:
+			case PlayerComponent.STATE_RIGHT_HIT:
+				hit.enabled = false;
+				hit.rect = new Rectangle(pos.pos.x, pos.pos.y,
+					0, 0);
+
+				hurt.enabled = true;
+				hurt.rect = new Rectangle(
+					pos.pos.x - 11, pos.pos.y - 31, 21, 56);
 				break;
 			default:
 				hit.enabled = false;
@@ -115,8 +208,9 @@ public class PlayerSystem extends IteratingSystem {
 					0, 0);
 
 				hurt.enabled = true;
-				hurt.rect = new Rectangle(pos.pos.x, pos.pos.y,
-					64, 64);
+				hurt.rect = new Rectangle(
+					pos.pos.x - 32, pos.pos.y - 32, 64, 64);
+				break;
 		}
 	}
 
@@ -134,5 +228,9 @@ public class PlayerSystem extends IteratingSystem {
 
 	public void attackLight(int ID) {
 		light[ID] = true;
+	}
+
+	public void attackHeavy(int ID) {
+		heavy[ID] = true;
 	}
 }

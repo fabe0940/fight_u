@@ -97,8 +97,6 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 		timerFont = fgen.generateFont(80);
 		timerFont.setColor(Color.RED);
 
-		Assets.menuMusic.stop();
-
 		Gdx.app.debug("HostScreen:HostScreen", "Starting engine");
 
 		engine.getSystem(AnimationSystem.class).setProcessing(true);
@@ -209,6 +207,11 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 					PlayerSystem.class).attackLight(2);
 			}
 
+			if (key == Keys.S) {
+				engine.getSystem(
+					PlayerSystem.class).attackHeavy(2);
+			}
+
 			if (key == Keys.LEFT) {
 				engine.getSystem(
 					PlayerSystem.class).moveLeft(2, true);
@@ -247,6 +250,10 @@ public class HostScreen extends Listener implements Screen, InputProcessor {
 
 		if (key == Keys.A) {
 			engine.getSystem(PlayerSystem.class).attackLight(1);
+		}
+
+		if (key == Keys.S) {
+			engine.getSystem(PlayerSystem.class).attackHeavy(1);
 		}
 
 		if (key == Keys.LEFT) {
