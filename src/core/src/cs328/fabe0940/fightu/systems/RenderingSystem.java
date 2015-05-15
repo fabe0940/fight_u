@@ -15,10 +15,11 @@ import cs328.fabe0940.fightu.components.TransformComponent;
 import cs328.fabe0940.fightu.components.TextureComponent;
 
 public class RenderingSystem extends IteratingSystem {
-	static final float FRUSTUM_WIDTH = 800;
-	static final float FRUSTUM_HEIGHT = 600;
+	static final float FRUSTUM_WIDTH = 160;
+	static final float FRUSTUM_HEIGHT = 120;
 
 	private SpriteBatch batch;
+	private Array<Entity> netQueue;
 	private Array<Entity> renderQueue;
 	private Comparator<Entity> comparator;
 	private OrthographicCamera cam;
@@ -33,6 +34,7 @@ public class RenderingSystem extends IteratingSystem {
 		transM = ComponentMapper.getFor(TransformComponent.class);
 		texM = ComponentMapper.getFor(TextureComponent.class);
 
+		netQueue = new Array<Entity>();
 		renderQueue = new Array<Entity>();
 
 		comparator = new Comparator<Entity>() {
@@ -64,10 +66,11 @@ public class RenderingSystem extends IteratingSystem {
 		TransformComponent t;
 		TextureComponent tex;
 
-		Gdx.app.debug("RenderingSystem:update",
-			"Updating render");
-
 		super.update(delta);
+
+		for (Entity e : netQueue) {
+			renderQueue.add(e);
+		}
 
 		renderQueue.sort(comparator);
 
@@ -115,5 +118,13 @@ public class RenderingSystem extends IteratingSystem {
 	@Override
 	public void processEntity(Entity e, float delta) {
 		renderQueue.add(e);
+	}
+
+	public void netAdd(Entity e) {
+		renderQueue.add(e);
+	}
+
+	public void netClear() {
+		netQueue.clear();
 	}
 }
