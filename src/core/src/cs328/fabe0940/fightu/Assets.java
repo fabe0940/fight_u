@@ -45,6 +45,9 @@ public class Assets {
 	public static Animation csRightLight;
 	public static Animation csRightHeavy;
 	public static Music menuMusic;
+	public static Sound gameGrunt;
+	public static Sound gameHit;
+	public static Sound gameWhiff;
 	public static Sound menuHover;
 	public static Sound menuSelect;
 
@@ -128,10 +131,16 @@ public class Assets {
 		csRightHeavy.setPlayMode(PlayMode.NORMAL);
 
 		menuMusic = Gdx.audio.newMusic(
-			Gdx.files.internal("sound/menu/bgmusic.mp3"));
+			Gdx.files.internal("sound/bgmusic.mp3"));
 		menuMusic.setLooping(true);
 		menuMusic.setVolume(0.25f);
 
+		gameHit = Gdx.audio.newSound(
+			Gdx.files.internal("sound/game/hit.mp3"));
+		gameGrunt = Gdx.audio.newSound(
+			Gdx.files.internal("sound/game/grunt.mp3"));
+		gameWhiff = Gdx.audio.newSound(
+			Gdx.files.internal("sound/game/whiff.mp3"));
 		menuHover = Gdx.audio.newSound(
 			Gdx.files.internal("sound/menu/hover.mp3"));
 		menuSelect = Gdx.audio.newSound(

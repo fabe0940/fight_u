@@ -8,6 +8,7 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Intersector;
+import cs328.fabe0940.fightu.Assets;
 import cs328.fabe0940.fightu.components.HealthComponent;
 import cs328.fabe0940.fightu.components.HitboxComponent;
 import cs328.fabe0940.fightu.components.HurtboxComponent;
@@ -62,6 +63,7 @@ public class HitSystem extends IteratingSystem {
 			if (hit.enabled && Intersector.overlaps(hit.rect, hurt.rect)) {
 				Gdx.app.debug("HitSystem:processEntity", "HIT");
 				hit.enabled = false;
+				Assets.playSound(Assets.gameHit);
 
 				switch (sm.get(e).get()) {
 					case PlayerComponent.STATE_LEFT_LIGHT_ATTACK:
@@ -73,10 +75,12 @@ public class HitSystem extends IteratingSystem {
 						sm.get(target).set(PlayerComponent.STATE_LEFT_HIT);
 						break;
 					case PlayerComponent.STATE_LEFT_HEAVY_ATTACK:
+						Assets.playSound(Assets.gameGrunt);
 						health.health -= 1000;
 						sm.get(target).set(PlayerComponent.STATE_RIGHT_HIT);
 						break;
 					case PlayerComponent.STATE_RIGHT_HEAVY_ATTACK:
+						Assets.playSound(Assets.gameGrunt);
 						health.health -= 1000;
 						sm.get(target).set(PlayerComponent.STATE_LEFT_HIT);
 						break;

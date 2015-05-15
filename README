@@ -1,0 +1,25 @@
+BUILDING
+========
+
+Change into the src/ directory and run the makefile.
+
+
+CONTROLS
+========
+
+The hosting application controls the left player, and the joining application
+the right player. The left and right arrow keys move the character side to
+side. The 'A' key performs a light attack. The 'S' key performs a heavy attack.
+ The escape key returns you to the main menu.
+
+
+KNOWN ISSUES
+============
+
+Occasionally the client fails to properly sync with the server due to some sort
+of race condition. Exiting out the main menu and joining again resolves this
+in essentially every case.
+
+Due to time contraints, character selection had to be dropped.
+
+The "Join" command connects to a server at 127.0.0.1.

@@ -6,6 +6,7 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Rectangle;
+import cs328.fabe0940.fightu.Assets;
 import cs328.fabe0940.fightu.components.HealthComponent;
 import cs328.fabe0940.fightu.components.HitboxComponent;
 import cs328.fabe0940.fightu.components.HurtboxComponent;
@@ -81,10 +82,12 @@ public class PlayerSystem extends IteratingSystem {
 			hit.enabled = true;
 
 			if (s.state == PlayerComponent.STATE_LEFT_IDLE) {
+				Assets.playSound(Assets.gameWhiff);
 				s.set(PlayerComponent.STATE_LEFT_LIGHT_ATTACK);
 			}
 
 			if (s.state == PlayerComponent.STATE_RIGHT_IDLE) {
+				Assets.playSound(Assets.gameWhiff);
 				s.set(PlayerComponent.STATE_RIGHT_LIGHT_ATTACK);
 			}
 
@@ -95,10 +98,12 @@ public class PlayerSystem extends IteratingSystem {
 			hit.enabled = true;
 
 			if (s.state == PlayerComponent.STATE_LEFT_IDLE) {
+				Assets.playSound(Assets.gameWhiff);
 				s.set(PlayerComponent.STATE_LEFT_HEAVY_ATTACK);
 			}
 
 			if (s.state == PlayerComponent.STATE_RIGHT_IDLE) {
+				Assets.playSound(Assets.gameWhiff);
 				s.set(PlayerComponent.STATE_RIGHT_HEAVY_ATTACK);
 			}
 
